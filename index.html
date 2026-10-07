@@ -7,7 +7,16 @@
 <style>
 :root{--bg:#08111f;--panel:#101d31;--text:#f4f7fb;--muted:#a9b5c7;--brand:#5b7cff;--accent:#35c7b4;--line:#22324b;--white:#fff}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#f7f9fc;color:#152033}a{text-decoration:none;color:inherit}.nav{position:sticky;top:0;z-index:10;background:rgba(8,17,31,.94);backdrop-filter:blur(12px);color:white;border-bottom:1px solid #1b2a40}.navin{max-width:1120px;margin:auto;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px}.logo{font-weight:900;font-size:21px}.logo span{color:#6e8aff}.navlinks{display:flex;gap:20px;font-size:14px}.navlinks a:hover{color:#7f96ff}.lang{background:#17253a;color:white;border:1px solid #31425d;border-radius:9px;padding:8px}.hero{background:radial-gradient(circle at 80% 20%,#203b74 0,#08111f 45%);color:white}.heroIn{max-width:1120px;margin:auto;padding:86px 22px 76px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}.eyebrow{color:#70e1d0;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:12px}.hero h1{font-size:clamp(40px,6vw,68px);line-height:1.02;margin:14px 0}.hero p{font-size:18px;line-height:1.65;color:#b9c5d7;max-width:650px}.buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}.btn{padding:13px 18px;border-radius:10px;font-weight:800;display:inline-block}.primary{background:var(--brand);color:white}.secondary{border:1px solid #41536f;color:white}.dash{background:#0d1829;border:1px solid #30425e;border-radius:18px;padding:18px;box-shadow:0 24px 70px #0008}.dashTop{display:flex;justify-content:space-between;color:#dbe5f5;font-weight:800;margin-bottom:14px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.card{background:#142238;border:1px solid #263b59;border-radius:12px;padding:15px}.card small{color:#8fa1ba}.card b{display:block;font-size:22px;margin-top:6px}.bars{margin-top:12px;background:#101d31;border-radius:12px;padding:15px}.bar{height:9px;border-radius:10px;background:#253754;margin:10px 0}.bar i{display:block;height:100%;background:#5b7cff;border-radius:10px}.section{max-width:1120px;margin:auto;padding:72px 22px}.section h2{text-align:center;font-size:36px;margin:0 0 12px}.lead{text-align:center;color:#65738a;max-width:720px;margin:0 auto 38px;line-height:1.65}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.box{background:white;border:1px solid #e2e8f0;border-radius:16px;padding:25px;box-shadow:0 10px 30px #1520330b}.box h3{margin-top:0}.box p{color:#68758a;line-height:1.6}.price{font-size:36px;font-weight:900;margin:12px 0}.featured{border:2px solid #5b7cff}.process{counter-reset:step}.step{position:relative;padding-left:54px}.step:before{counter-increment:step;content:counter(step);position:absolute;left:0;top:0;width:36px;height:36px;border-radius:50%;background:#eaf0ff;color:#4665d8;display:grid;place-items:center;font-weight:900}.faq details{border-bottom:1px solid #dde4ee;padding:18px 0}.faq summary{cursor:pointer;font-weight:800}.cta{background:#08111f;color:white;text-align:center}.cta .section{padding:70px 22px}.wa{position:fixed;right:18px;bottom:18px;z-index:20;background:#20b869;color:white;padding:13px 17px;border-radius:999px;font-weight:900;box-shadow:0 12px 30px #0004}.footer{background:#050b14;color:#8996a9;padding:28px 22px;text-align:center;font-size:13px}@media(max-width:800px){.heroIn{grid-template-columns:1fr;padding-top:60px}.navlinks{display:none}.grid{grid-template-columns:1fr}.cards{grid-template-columns:1fr}.hero h1{font-size:46px}}
-</style></head>
+</style><style>
+.request-wrap{max-width:780px;margin:30px auto 0;background:#fff;border:1px solid #e2e8f0;border-radius:18px;padding:24px;box-shadow:0 10px 30px #1520330b}
+.request-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.request-grid .full{grid-column:1/-1}
+.request-grid label{display:block;font-weight:800;font-size:14px}.request-grid input,.request-grid select,.request-grid textarea{width:100%;margin-top:7px;padding:12px;border:1px solid #ccd6e4;border-radius:9px;font:inherit;background:#fff;color:#152033}
+.request-grid textarea{min-height:110px;resize:vertical}.request-actions{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+.form-msg{font-weight:700;color:#526174}.form-msg.ok{color:#16845f}.form-msg.err{color:#b33a3a}
+@media(max-width:650px){.request-grid{grid-template-columns:1fr}.request-grid .full{grid-column:auto}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
 <body>
 <nav class="nav"><div class="navin"><div class="logo">Youssef<span>Digital</span></div><div class="navlinks"><a href="#services" data-i18n="navServices">Services</a><a href="#manager" data-i18n="navManager">Business Manager</a><a href="#pricing" data-i18n="navPricing">Pricing</a><a href="#faq" data-i18n="navFaq">FAQ</a></div><select class="lang" id="lang" aria-label="Language"><option value="en">English</option><option value="ar">العربية</option><option value="az">Arabizi</option></select></div></nav>
 <header class="hero"><div class="heroIn"><div><div class="eyebrow" data-i18n="eyebrow">Websites + Business Management</div><h1 data-i18n="heroTitle">A professional online presence that works for your business.</h1><p data-i18n="heroText">Modern websites and practical business tools for small businesses in Lebanon — built around your services, customers and workflow.</p><div class="buttons"><a class="btn primary" href="#contact" data-i18n="getStarted">Get Started</a><a class="btn secondary" href="#manager" data-i18n="seeManager">See the Business Manager</a></div></div><div class="dash"><div class="dashTop"><span data-i18n="manager">Business Manager</span><span data-i18n="online">● Online</span></div><div class="cards"><div class="card"><small data-i18n="pending">Pending</small><b>12</b></div><div class="card"><small data-i18n="confirmed">Confirmed</small><b>28</b></div><div class="card"><small data-i18n="income">Income</small><b>$2,840</b></div></div><div class="bars"><small style="color:#8fa1ba" data-i18n="monthlyActivity">Monthly activity</small><div class="bar"><i style="width:82%"></i></div><div class="bar"><i style="width:64%"></i></div><div class="bar"><i style="width:48%"></i></div></div></div></div></header>
@@ -16,12 +25,32 @@
 <section class="section" id="pricing"><h2 data-i18n="simplePricing">Simple pricing</h2><p class="lead" data-i18n="pricingLead">Clear starting prices. Custom systems are quoted based on requirements.</p><div class="grid"><div class="box"><h3 data-i18n="website">Website</h3><div class="price">$249</div><p data-i18n="websiteSetup">Professional website setup.</p></div><div class="box featured"><h3 data-i18n="bundle">Website + Business Manager</h3><div class="price">$349</div><p><b data-i18n="bestValue">Best Value</b> — <span data-i18n="bundleText">website plus business management setup.</span></p></div><div class="box"><h3 data-i18n="manager">Business Manager</h3><div class="price">$149</div><p data-i18n="managerSetup">Private business-management setup.</p></div></div></section>
 <section class="section"><h2 data-i18n="howWorks">How it works</h2><div class="grid process"><div class="box step"><h3 data-i18n="agree">Agree</h3><p data-i18n="agreeText">Choose what you need and confirm the scope.</p></div><div class="box step"><h3 data-i18n="sendDetails">Send details</h3><p data-i18n="detailsText">Logo, services, prices, hours and photos.</p></div><div class="box step"><h3 data-i18n="reviewLaunch">Review & launch</h3><p data-i18n="launchText">Review the work, make changes and go live.</p></div></div></section>
 <section class="section faq" id="faq"><h2>FAQ</h2><p class="lead" data-i18n="faqLead">A few common questions.</p><details><summary data-i18n="q1">Can I request a quote through the website?</summary><p data-i18n="a1">Yes. The request can be submitted for manual review rather than instantly confirmed.</p></details><details><summary data-i18n="q2">Does the Business Manager automatically confirm customers?</summary><p data-i18n="a2">No. The intended workflow lets you review the request first and contact the customer yourself.</p></details><details><summary data-i18n="q3">Can the website support Arabic?</summary><p data-i18n="a3">Yes. The site can use English, Arabic RTL, and Lebanese-style Arabizi modes.</p></details><details><summary data-i18n="q4">Is the Business Manager production-ready?</summary><p data-i18n="a4">This public page presents the concept/demo. A production version requires a secure backend, authentication, database, tenant isolation, backups and monitoring before handling real client data.</p></details></section>
+<section class="section" id="request">
+<h2 data-i18n="requestTitle">Request a Quote or Book a Service</h2>
+<p class="lead" data-i18n="requestLead">Send your request. It will appear in the Business Manager as Pending for manual review.</p>
+<div class="request-wrap">
+<form id="requestForm">
+<div class="request-grid">
+<label><span data-i18n="nameLabel">Name</span><input name="customer_name" required autocomplete="name"></label>
+<label><span data-i18n="phoneLabel">Phone / WhatsApp</span><input name="phone" required autocomplete="tel"></label>
+<label><span data-i18n="emailLabel">Email</span><input name="email" type="email" autocomplete="email"></label>
+<label><span data-i18n="typeLabel">Request type</span><select name="request_type"><option value="quote">Request a Quote</option><option value="booking">Book a Service</option></select></label>
+<label><span data-i18n="serviceLabel">Service</span><input name="service" placeholder="Website, Business Manager, SEO..." required></label>
+<label><span data-i18n="dateLabel">Preferred date</span><input name="preferred_date" type="date"></label>
+<label><span data-i18n="timeLabel">Preferred time</span><input name="preferred_time" type="time"></label>
+<label class="full"><span data-i18n="notesLabel">Notes</span><textarea name="notes" placeholder="Tell us what you need..."></textarea></label>
+</div>
+<div class="request-actions"><button class="btn primary" type="submit" id="requestSubmit" data-i18n="sendRequest">Send Request</button><span id="requestMsg" class="form-msg" aria-live="polite"></span></div>
+</form>
+</div>
+</section>
 <section class="cta" id="contact"><div class="section"><h2 data-i18n="ctaTitle">Ready to build your business online?</h2><p class="lead" style="color:#a9b5c7" data-i18n="ctaText">Message YoussefDigital on WhatsApp to discuss your website or business system.</p><a class="btn primary" id="ctaWa" href="https://wa.me/96178755934?text=Hi%20Youssef%2C%20I%27d%20like%20to%20discuss%20a%20website%20or%20Business%20Manager." target="_blank" data-i18n="whatsappCta">WhatsApp +961 78 755 934</a></div></section>
 <a class="wa" id="floatWa" href="https://wa.me/96178755934?text=Hi%20Youssef%2C%20I%27d%20like%20to%20discuss%20a%20website%20or%20Business%20Manager." target="_blank">WhatsApp</a>
 <footer class="footer" data-i18n="footer">© 2026 YoussefDigital · Websites & Business Management</footer>
 <script>
 const translations={
 en:{
+requestTitle:"Request a Quote or Book a Service",requestLead:"Send your request. It will appear in the Business Manager as Pending for manual review.",nameLabel:"Name",phoneLabel:"Phone / WhatsApp",emailLabel:"Email",typeLabel:"Request type",serviceLabel:"Service",dateLabel:"Preferred date",timeLabel:"Preferred time",notesLabel:"Notes",sendRequest:"Send Request",requestSent:"Request sent successfully. YoussefDigital will review it manually.",requestError:"Could not send the request. Please try again or use WhatsApp.",requestSending:"Sending...",
 navServices:"Services",navManager:"Business Manager",navPricing:"Pricing",navFaq:"FAQ",eyebrow:"Websites + Business Management",
 heroTitle:"A professional online presence that works for your business.",
 heroText:"Modern websites and practical business tools for small businesses in Lebanon — built around your services, customers and workflow.",
@@ -44,7 +73,7 @@ q4:"Is the Business Manager production-ready?",a4:"This public page presents the
 ctaTitle:"Ready to build your business online?",ctaText:"Message YoussefDigital on WhatsApp to discuss your website or business system.",whatsappCta:"WhatsApp +961 78 755 934",
 footer:"© 2026 YoussefDigital · Websites & Business Management"
 },
-ar:{
+ar:{requestTitle:"طلب عرض سعر أو حجز خدمة",requestLead:"أرسل طلبك وسيظهر في مدير الأعمال بحالة قيد الانتظار للمراجعة اليدوية.",nameLabel:"الاسم",phoneLabel:"الهاتف / واتساب",emailLabel:"البريد الإلكتروني",typeLabel:"نوع الطلب",serviceLabel:"الخدمة",dateLabel:"التاريخ المفضل",timeLabel:"الوقت المفضل",notesLabel:"ملاحظات",sendRequest:"إرسال الطلب",requestSent:"تم إرسال الطلب بنجاح. سيقوم YoussefDigital بمراجعته يدويًا.",requestError:"تعذر إرسال الطلب. حاول مرة أخرى أو استخدم واتساب.",requestSending:"جارٍ الإرسال...",
 navServices:"الخدمات",navManager:"مدير الأعمال",navPricing:"الأسعار",navFaq:"الأسئلة الشائعة",eyebrow:"مواقع إلكترونية + إدارة الأعمال",
 heroTitle:"حضور احترافي على الإنترنت يعمل لصالح عملك.",heroText:"مواقع إلكترونية حديثة وأدوات عملية لإدارة الأعمال الصغيرة في لبنان — مصممة حول خدماتك وعملائك وطريقة عملك.",
 getStarted:"ابدأ الآن",seeManager:"شاهد مدير الأعمال",manager:"مدير الأعمال",online:"● متصل",pending:"قيد الانتظار",confirmed:"مؤكد",income:"الدخل",monthlyActivity:"النشاط الشهري",
@@ -66,7 +95,7 @@ q4:"هل مدير الأعمال جاهز للاستخدام الفعلي؟",a4:
 ctaTitle:"جاهز لبناء حضور عملك على الإنترنت؟",ctaText:"راسل YoussefDigital على واتساب لمناقشة موقعك أو نظام إدارة أعمالك.",whatsappCta:"واتساب +961 78 755 934",
 footer:"© 2026 YoussefDigital · مواقع إلكترونية وإدارة الأعمال"
 },
-az:{
+az:{requestTitle:"Otlob quote aw book service",requestLead:"Eb3at talabak. Byewsal 3a Business Manager ka Pending la manual review.",nameLabel:"Esmak",phoneLabel:"Phone / WhatsApp",emailLabel:"Email",typeLabel:"Naw3 l talab",serviceLabel:"Service",dateLabel:"L nhar l m2addam",timeLabel:"L wa2et l m2addam",notesLabel:"Notes",sendRequest:"Eb3at l talab",requestSent:"Wsel l talab. YoussefDigital ra7 yerja3lo manual.",requestError:"Ma 2edna neb3at l talab. Jarreb marra tene aw esta3mel WhatsApp.",requestSending:"3am neb3at...",
 navServices:"Khadamet",navManager:"Business Manager",navPricing:"Se3er",navFaq:"As2le",
 eyebrow:"Websites + Business Management",heroTitle:"Online presence 7erfe w byeshtghil la mashrou3ak.",
 heroText:"Websites 3asriye w tools 3amaliye la small businesses bi Lebnen — m3amale 3a khadmetak, zaba2nak w tari2et shoghlek.",
@@ -112,4 +141,28 @@ function setLanguage(value){
 }
 lang.addEventListener("change",e=>setLanguage(e.target.value));
 setLanguage(localStorage.getItem("yd-lang")||"en");
-</script></body></html>
+</script>
+<script>
+const YD_SUPABASE_URL="https://fbgphoixzpykcpdbfbhd.supabase.co";
+const YD_SUPABASE_KEY="sb_publishable_U9E9amYU8RvRz4J1etv7Sw_svCjP-U-";
+const YD_BUSINESS_ID="11111111-1111-1111-1111-111111111111";
+const ydSupabase=window.supabase.createClient(YD_SUPABASE_URL,YD_SUPABASE_KEY);
+const requestForm=document.getElementById("requestForm");
+if(requestForm){
+ requestForm.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const btn=document.getElementById("requestSubmit"),msg=document.getElementById("requestMsg");
+  btn.disabled=true; msg.className="form-msg"; msg.textContent=(translations[lang.value]||translations.en).requestSending;
+  const data=Object.fromEntries(new FormData(requestForm).entries());
+  const {error}=await ydSupabase.from("requests").insert({
+   business_id:YD_BUSINESS_ID,customer_name:data.customer_name,phone:data.phone,whatsapp:data.phone,
+   email:data.email||null,request_type:data.request_type,service:data.service,
+   preferred_date:data.preferred_date||null,preferred_time:data.preferred_time||null,notes:data.notes||null,status:"pending"
+  });
+  btn.disabled=false;
+  if(error){msg.className="form-msg err";msg.textContent=(translations[lang.value]||translations.en).requestError;console.error(error);return;}
+  requestForm.reset();msg.className="form-msg ok";msg.textContent=(translations[lang.value]||translations.en).requestSent;
+ });
+}
+</script>
+</body></html>

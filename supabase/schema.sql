@@ -64,6 +64,13 @@ alter table public.businesses enable row level security;
 alter table public.profiles enable row level security;
 alter table public.requests enable row level security;
 
+-- Make policy creation safe to re-run if a previous attempt partially succeeded.
+drop policy if exists "members can read own business" on public.businesses;
+drop policy if exists "members can read own profile" on public.profiles;
+drop policy if exists "public can create requests" on public.requests;
+drop policy if exists "members can read own requests" on public.requests;
+drop policy if exists "members can update own requests" on public.requests;
+
 -- Business owners/managers/staff/viewers can only see data for their own business.
 create policy "members can read own business"
 on public.businesses for select

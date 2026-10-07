@@ -110,8 +110,7 @@ grant select on public.profiles to authenticated;
 grant insert on public.requests to anon, authenticated;
 grant select, update on public.requests to authenticated;
 
--- After creating your Supabase Auth user, replace AUTH_USER_UUID below
--- with that user's UUID and run:
--- insert into public.profiles (id, business_id, full_name, role)
--- values ('AUTH_USER_UUID', '11111111-1111-1111-1111-111111111111', 'Youssef Haddad', 'owner')
--- on conflict (id) do update set business_id=excluded.business_id, role=excluded.role;
+-- Owner profile for YoussefDigital
+insert into public.profiles (id, business_id, full_name, role)
+values ('a0706c0b-2a9c-4c97-959e-6d0c3ecd8869', '11111111-1111-1111-1111-111111111111', 'Youssef Haddad', 'owner')
+on conflict (id) do update set business_id=excluded.business_id, full_name=excluded.full_name, role=excluded.role;

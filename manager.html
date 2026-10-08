@@ -28,11 +28,16 @@ th,td{text-align:left;padding:13px;border-bottom:1px solid #23354e}th{color:#9ca
 <section id="login" class="wrap">
  <div class="panel auth">
   <h1>Business Manager</h1>
-  <p class="muted">Sign in with your YoussefDigital email. We will send you a secure sign-in link.</p>
+  <p class="muted">Sign in with your YoussefDigital email. We will send a 6-digit verification code to your email.</p>
   <label for="email">Email</label>
   <input id="email" type="email" autocomplete="email" placeholder="your@email.com">
-  <button id="loginBtn" type="button" style="margin-top:16px;width:100%">Send sign-in link</button>
+  <button id="loginBtn" type="button" style="margin-top:16px;width:100%">Send code</button>
   <div id="loginMsg" class="msg"></div>
+  <div id="verifyBox" class="hidden">
+   <label for="otp">6-digit code</label>
+   <input id="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456">
+   <button id="verifyBtn" type="button" style="margin-top:12px;width:100%">Verify code</button>
+  </div>
  </div>
 </section>
 <section id="app" class="wrap hidden">
@@ -64,15 +69,18 @@ $("loginBtn").addEventListener("click",async function(){
  const msg=$("loginMsg");
  if(!email){msg.className="msg err";msg.textContent="Please enter your email.";return}
  this.disabled=true;this.textContent="Sending...";
- msg.className="msg";msg.textContent="Connecting to Supabase...";
+ msg.className="msg";msg.textContent="Sending your 6-digit code...";
  try{
-  const result=await client.auth.signInWithOtp({email:email,options:{emailRedirectTo:window.location.href}});
+  const result=await client.auth.signInWithOtp({email:email});
   if(result.error){msg.className="msg err";msg.textContent=result.error.message}
-  else{msg.className="msg ok";msg.textContent="Sign-in link requested. Check your inbox and spam folder."}
+  else{
+   msg.className="msg ok";msg.textContent="Code sent. Check your email.";
+   show("verifyBox",true); $("otp").focus();
+  }
  }catch(error){
   msg.className="msg err";msg.textContent=error&&error.message?error.message:"Could not connect to Supabase."
  }
- this.disabled=false;this.textContent="Send sign-in link";
+ this.disabled=false;this.textContent="Send code";
 });
 
 async function load(){

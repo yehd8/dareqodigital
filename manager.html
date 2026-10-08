@@ -1,27 +1,108 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>YoussefDigital Business Manager</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{margin:0;font-family:system-ui;background:#07101d;color:#edf3ff}.wrap{max-width:1150px;margin:auto;padding:28px 20px}.panel{background:#101c2d;border:1px solid #293c58;border-radius:16px;padding:22px}.muted{color:#9cabc0}.btn{border:0;border-radius:9px;padding:10px 14px;background:#5b7cff;color:white;font-weight:800;cursor:pointer;text-decoration:none}.btn.secondary{background:#1a2b45}.btn.danger{background:#7f3038}.hidden{display:none}.auth{max-width:440px;margin:70px auto}.field{margin:14px 0}.field label{display:block;font-weight:800;margin-bottom:6px}.field input{width:100%;box-sizing:border-box;background:#0b1728;color:white;border:1px solid #344963;border-radius:9px;padding:11px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}.card{background:#101c2d;border:1px solid #293c58;border-radius:14px;padding:18px}.num{font-size:30px;font-weight:900}.top{display:flex;justify-content:space-between;align-items:center;gap:15px}.actions{display:flex;gap:8px;flex-wrap:wrap}.notice{margin:20px 0;padding:14px;border:1px solid #344963;border-radius:11px;background:#0d192a;color:#b9c6d8}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:22px 0}.tab{border:1px solid #293c58;background:#0d1828;color:#b9c6d8;border-radius:999px;padding:8px 12px;font-weight:800;cursor:pointer}.tab.active{background:#243b70;color:white}.table{background:#101c2d;border:1px solid #293c58;border-radius:14px;overflow:hidden}.row{display:grid;grid-template-columns:1.4fr 1.1fr 1fr 1fr 1.3fr;gap:12px;padding:15px;border-bottom:1px solid #23354e;align-items:center}.head{font-size:12px;color:#8fa1ba;text-transform:uppercase}.pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#263753;color:#a9c0ff;font-size:12px;font-weight:900}.detail{margin-top:16px}.detailgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.detailbox{background:#0c1727;border:1px solid #263b58;border-radius:10px;padding:13px}.detailbox b{display:block;color:#8fa1ba;font-size:12px;margin-bottom:5px}.detailbox textarea,.detailbox input{width:100%;box-sizing:border-box;background:#0b1728;color:white;border:1px solid #344963;border-radius:8px;padding:9px}.msg{margin-top:12px;font-weight:800}.err{color:#ff9292}.ok{color:#70e1d0}@media(max-width:850px){.grid{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr 1fr}.head{display:none}}@media(max-width:550px){.grid,.detailgrid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}}
-</style></head><body>
-<div id="login" class="wrap"><div class="panel auth"><h1>Business Manager</h1><p class="muted">Sign in with your YoussefDigital email. We will send you a secure sign-in link.</p><div id="loginForm"><div class="field"><label>Email</label><input id="email" type="email" required autocomplete="email"></div><button type="button" class="btn" id="loginBtn" onclick="sendMagicLink()">Send sign-in link</button><div id="loginMsg" class="msg"></div></div></div></div>
-<div id="app" class="wrap hidden"><div class="top"><div><h1>Business Manager</h1><div id="userInfo" class="muted">YoussefDigital · Manual review workflow</div></div><div class="actions"><a class="btn secondary" href="index.html">Website</a><button class="btn secondary" id="refresh">Refresh</button><button class="btn danger" id="logout">Sign out</button></div></div>
-<div class="notice"><b>Manual workflow:</b> Website requests arrive as <b>Pending</b>. Review the details, contact the customer yourself, then move the request to Contacted, Confirmed or Rejected. Nothing is automatically confirmed to the customer.</div>
-<div class="grid"><div class="card"><div class="muted">Pending</div><div class="num" id="pending">0</div></div><div class="card"><div class="muted">Contacted</div><div class="num" id="contacted">0</div></div><div class="card"><div class="muted">Confirmed</div><div class="num" id="confirmed">0</div></div><div class="card"><div class="muted">Quoted / confirmed income</div><div class="num" id="income">$0</div></div></div>
-<div class="tabs"><button class="tab active" data-filter="all">All</button><button class="tab" data-filter="quote">Quotes</button><button class="tab" data-filter="booking">Bookings</button><button class="tab" data-filter="pending">Pending</button><button class="tab" data-filter="confirmed">Confirmed</button><button class="tab" data-filter="completed">Completed</button></div>
-<div class="table"><div class="row head"><div>Customer</div><div>Request</div><div>Date / time</div><div>Status</div><div>Actions</div></div><div id="rows"></div></div><div id="detail" class="panel detail hidden"></div></div>
+body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:#07101d;color:#edf3ff}
+.wrap{max-width:1100px;margin:auto;padding:28px 20px}
+.panel{background:#101c2d;border:1px solid #293c58;border-radius:16px;padding:24px}
+.auth{max-width:440px;margin:80px auto}
+label{display:block;font-weight:700;margin:14px 0 6px}
+input,textarea{width:100%;box-sizing:border-box;background:#0b1728;color:#fff;border:1px solid #344963;border-radius:9px;padding:12px}
+button,.btn{border:0;border-radius:9px;padding:11px 15px;background:#5b7cff;color:#fff;font-weight:800;cursor:pointer;text-decoration:none}
+button:disabled{opacity:.6;cursor:wait}
+.hidden{display:none}.muted{color:#9cabc0}.msg{margin-top:12px;font-weight:700}.ok{color:#70e1d0}.err{color:#ff9292}
+.top{display:flex;justify-content:space-between;gap:15px;align-items:center}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}.card{background:#101c2d;border:1px solid #293c58;border-radius:14px;padding:18px}.num{font-size:30px;font-weight:900}
+.notice{padding:14px;border:1px solid #344963;border-radius:11px;background:#0d192a;margin:18px 0}
+table{width:100%;border-collapse:collapse;background:#101c2d;border:1px solid #293c58;border-radius:14px;overflow:hidden}
+th,td{text-align:left;padding:13px;border-bottom:1px solid #23354e}th{color:#9cabc0;font-size:12px;text-transform:uppercase}
+.pill{padding:5px 9px;border-radius:999px;background:#263753;color:#a9c0ff;font-size:12px;font-weight:800}
+@media(max-width:700px){.cards{grid-template-columns:1fr 1fr}.top{align-items:flex-start;flex-direction:column}table{font-size:13px}}
+</style>
+</head>
+<body>
+<section id="login" class="wrap">
+ <div class="panel auth">
+  <h1>Business Manager</h1>
+  <p class="muted">Sign in with your YoussefDigital email. We will send you a secure sign-in link.</p>
+  <label for="email">Email</label>
+  <input id="email" type="email" autocomplete="email" placeholder="your@email.com">
+  <button id="loginBtn" type="button" style="margin-top:16px;width:100%">Send sign-in link</button>
+  <div id="loginMsg" class="msg"></div>
+ </div>
+</section>
+<section id="app" class="wrap hidden">
+ <div class="top">
+  <div><h1>Business Manager</h1><div id="userInfo" class="muted"></div></div>
+  <div class="actions"><a class="btn" href="index.html">Website</a><button id="logout" type="button">Sign out</button></div>
+ </div>
+ <div class="notice"><b>Manual workflow:</b> New website requests arrive as Pending. Review them and contact the customer yourself before confirming.</div>
+ <div class="cards">
+  <div class="card"><div class="muted">Pending</div><div id="pending" class="num">0</div></div>
+  <div class="card"><div class="muted">Contacted</div><div id="contacted" class="num">0</div></div>
+  <div class="card"><div class="muted">Confirmed</div><div id="confirmed" class="num">0</div></div>
+  <div class="card"><div class="muted">Income</div><div id="income" class="num">$0</div></div>
+ </div>
+ <div id="status" class="msg"></div>
+ <table><thead><tr><th>Customer</th><th>Service</th><th>Date / time</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
+</section>
 <script>
-const URL="https://fbgphoixzpykcpdbfbhd.supabase.co",KEY="sb_publishable_U9E9amYU8RvRz4J1etv7Sw_svCjP-U-",BUSINESS="11111111-1111-1111-1111-111111111111";
-const db=window.supabase.createClient(URL,KEY);let list=[],filter="all",businessId=null;
-const el=id=>document.getElementById(id),esc=v=>String(v??"").replace(/[&<>"']/g,x=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[x]));
-function wa(phone,name,service){let p=(phone||"").replace(/[^0-9]/g,"");if(!p)return"#";return"https://wa.me/"+p+"?text="+encodeURIComponent("Hi "+(name||"there")+", this is Youssef. I received your request for "+(service||"our service")+". I'd like to confirm the details with you.")}
-function dateOf(r){return[r.preferred_date,r.preferred_time].filter(Boolean).join(" · ")||"—"}
-function render(){let rows=list.filter(r=>filter==="all"?true:(filter==="quote"||filter==="booking"?r.request_type===filter:r.status===filter));el("rows").innerHTML=rows.length?rows.map(r=>'<div class="row"><div><b>'+esc(r.customer_name)+'</b><br><span class="muted">'+esc(r.phone||r.email||"")+'</span></div><div>'+esc(r.service||"—")+'<br><span class="muted">'+esc(r.request_type)+'</span></div><div>'+esc(dateOf(r))+'</div><div><span class="pill">'+esc(r.status)+'</span></div><div class="actions"><button class="btn secondary" onclick="viewRequest(\''+r.id+'\')">View</button>'+(r.phone?'<a class="btn" target="_blank" href="'+wa(r.phone,r.customer_name,r.service)+'">WhatsApp</a>':"")+'</div></div>').join(""):'<div style="padding:25px" class="muted">No requests in this view.</div>';el("pending").textContent=list.filter(r=>r.status==="pending").length;el("contacted").textContent=list.filter(r=>r.status==="contacted").length;el("confirmed").textContent=list.filter(r=>r.status==="confirmed").length;el("income").textContent="$"+list.filter(r=>["confirmed","completed"].includes(r.status)).reduce((n,r)=>n+Number(r.quoted_price||0),0).toLocaleString(undefined,{maximumFractionDigits:2})}
-async function load(){let q=await db.from("requests").select("*").eq("business_id",businessId).order("created_at",{ascending:false});if(q.error){alert(q.error.message);return}list=q.data||[];render()}
-window.viewRequest=function(id){let r=list.find(x=>x.id===id);if(!r)return;el("detail").classList.remove("hidden");el("detail").innerHTML='<div class="top"><h2>'+esc(r.customer_name)+'</h2><button class="btn secondary" onclick="el(\'detail\').classList.add(\'hidden\')">Close</button></div><div class="detailgrid"><div class="detailbox"><b>Phone</b>'+esc(r.phone||"—")+'</div><div class="detailbox"><b>Email</b>'+esc(r.email||"—")+'</div><div class="detailbox"><b>Request</b>'+esc(r.request_type)+" · "+esc(r.service||"—")+'</div><div class="detailbox"><b>Preferred date/time</b>'+esc(dateOf(r))+'</div><div class="detailbox"><b>Customer notes</b>'+esc(r.notes||"—")+'</div><div class="detailbox"><b>Internal notes</b><textarea id="notes">'+esc(r.internal_notes||"")+'</textarea></div><div class="detailbox"><b>Quoted price</b><input id="price" type="number" step="0.01" value="'+esc(r.quoted_price||"")+'"></div><div class="detailbox"><b>Created</b>'+new Date(r.created_at).toLocaleString()+'</div></div><div class="actions" style="margin-top:14px">'+(r.status==="pending"?'<button class="btn" onclick="setStatus(\''+r.id+'\',\'contacted\')">Mark Contacted</button>':"")+(["pending","contacted"].includes(r.status)?'<button class="btn" onclick="setStatus(\''+r.id+'\',\'confirmed\')">Confirm</button>':"")+(r.status==="confirmed"?'<button class="btn" onclick="setStatus(\''+r.id+'\',\'completed\')">Complete</button>':"")+(r.status!=="rejected"&&r.status!=="completed"?'<button class="btn danger" onclick="setStatus(\''+r.id+'\',\'rejected\')">Reject</button>':"")+'<button class="btn secondary" onclick="saveDetails(\''+r.id+'\')">Save notes / price</button>'+(r.email?'<a class="btn secondary" href="mailto:'+encodeURIComponent(r.email)+'">Email</a>':"")+(r.phone?'<a class="btn secondary" target="_blank" href="'+wa(r.phone,r.customer_name,r.service)+'">WhatsApp</a>':"")+'</div>'}
-window.setStatus=async function(id,status){let q=await db.from("requests").update({status}).eq("id",id);if(q.error){alert(q.error.message);return}await load();viewRequest(id)}
-window.saveDetails=async function(id){let q=await db.from("requests").update({internal_notes:el("notes").value,quoted_price:el("price").value?Number(el("price").value):null}).eq("id",id);if(q.error){alert(q.error.message);return}await load();viewRequest(id)}
-async function start(){let u=await db.auth.getUser();if(!u.data.user){el("login").classList.remove("hidden");el("app").classList.add("hidden");return}let p=await db.from("profiles").select("business_id,full_name,role").eq("id",u.data.user.id).single();if(p.error||!p.data){el("loginMsg").className="msg err";el("loginMsg").textContent="Your email is signed in, but it is not linked to a Business Manager profile yet.";return}businessId=p.data.business_id;el("userInfo").textContent="YoussefDigital · "+(p.data.full_name||u.data.user.email)+" · "+p.data.role;el("login").classList.add("hidden");el("app").classList.remove("hidden");await load()}
-window.sendMagicLink=async function(){const email=el("email").value.trim(),msg=el("loginMsg"),btn=el("loginBtn");if(!email){msg.className="msg err";msg.textContent="Please enter your email.";el("email").focus();return}btn.disabled=true;btn.textContent="Sending...";msg.className="msg";msg.textContent="Connecting to Supabase...";try{const q=await db.auth.signInWithOtp({email,options:{emailRedirectTo:location.href}});if(q.error){msg.className="msg err";msg.textContent=q.error.message}else{msg.className="msg ok";msg.textContent="Sign-in link requested. Check your inbox and spam folder."}}catch(err){msg.className="msg err";msg.textContent=err&&err.message?err.message:"Could not contact Supabase. Please try again."}finally{btn.disabled=false;btn.textContent="Send sign-in link"}};
-el("logout").addEventListener("click",async()=>{await db.auth.signOut();location.reload()});el("refresh").addEventListener("click",load);document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");filter=b.dataset.filter;render()}));db.auth.onAuthStateChange(()=>setTimeout(start,0));start();
-</script></body></html>
+(function(){
+const SUPABASE_URL="https://fbgphoixzpykcpdbfbhd.supabase.co";
+const SUPABASE_KEY="sb_publishable_U9E9amYU8RvRz4J1etv7Sw_svCjP-U-";
+const BUSINESS_ID="11111111-1111-1111-1111-111111111111";
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const $=id=>document.getElementById(id);
+const show=(id,on)=>$(id).classList.toggle("hidden",!on);
+
+$("loginBtn").addEventListener("click",async function(){
+ const email=$("email").value.trim();
+ const msg=$("loginMsg");
+ if(!email){msg.className="msg err";msg.textContent="Please enter your email.";return}
+ this.disabled=true;this.textContent="Sending...";
+ msg.className="msg";msg.textContent="Connecting to Supabase...";
+ try{
+  const result=await client.auth.signInWithOtp({email:email,options:{emailRedirectTo:window.location.href}});
+  if(result.error){msg.className="msg err";msg.textContent=result.error.message}
+  else{msg.className="msg ok";msg.textContent="Sign-in link requested. Check your inbox and spam folder."}
+ }catch(error){
+  msg.className="msg err";msg.textContent=error&&error.message?error.message:"Could not connect to Supabase."
+ }
+ this.disabled=false;this.textContent="Send sign-in link";
+});
+
+async function load(){
+ const userResult=await client.auth.getUser();
+ const user=userResult.data.user;
+ if(!user){show("login",true);show("app",false);return}
+ const profile=await client.from("profiles").select("business_id,full_name,role").eq("id",user.id).single();
+ if(profile.error||!profile.data){
+  show("login",true);show("app",false);
+  $("loginMsg").className="msg err";
+  $("loginMsg").textContent="Your account is signed in, but it is not linked to Business Manager.";
+  return
+ }
+ show("login",false);show("app",true);
+ $("userInfo").textContent="YoussefDigital · "+(profile.data.full_name||user.email)+" · "+profile.data.role;
+ const requests=await client.from("requests").select("*").eq("business_id",profile.data.business_id).order("created_at",{ascending:false});
+ if(requests.error){$("status").className="msg err";$("status").textContent=requests.error.message;return}
+ const rows=requests.data||[];
+ $("pending").textContent=rows.filter(x=>x.status==="pending").length;
+ $("contacted").textContent=rows.filter(x=>x.status==="contacted").length;
+ $("confirmed").textContent=rows.filter(x=>x.status==="confirmed").length;
+ const income=rows.filter(x=>x.status==="confirmed"||x.status==="completed").reduce((n,x)=>n+Number(x.quoted_price||0),0);
+ $("income").textContent="$"+income.toLocaleString(undefined,{maximumFractionDigits:2});
+ $("rows").innerHTML=rows.length?rows.map(x=>"<tr><td><b>"+escapeHtml(x.customer_name)+"</b><br><span class='muted'>"+escapeHtml(x.email||x.phone||"")+"</span></td><td>"+escapeHtml(x.service||"—")+"</td><td>"+escapeHtml([x.preferred_date,x.preferred_time].filter(Boolean).join(" · ")||"—")+"</td><td><span class='pill'>"+escapeHtml(x.status)+"</span></td></tr>").join(""):"<tr><td colspan='4'>No requests yet.</td></tr>";
+}
+function escapeHtml(value){return String(value==null?"":value).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+$("logout").addEventListener("click",async function(){await client.auth.signOut();window.location.reload()});
+client.auth.onAuthStateChange(function(){setTimeout(load,0)});
+load();
+})();
+</script>
+</body>
+</html>

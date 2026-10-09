@@ -38,7 +38,6 @@ create table if not exists public.requests (
   updated_at timestamptz not null default now()
 );
 
--- Expand request workflow: Pending -> Contacted -> Confirmed -> In Progress -> Completed.
 alter table public.requests drop constraint if exists requests_status_check;
 alter table public.requests add constraint requests_status_check
 check (status in ('pending','contacted','confirmed','in_progress','completed','rejected'));
@@ -64,12 +63,26 @@ create table if not exists public.projects (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.payments (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid not null references public.businesses(id) on delete cascade,
+  project_id uuid not null references public.projects(id) on delete cascade,
+  amount numeric(12,2) not null check (amount >= 0),
+  payment_date date not null default current_date,
+  payment_method text not null default 'manual',
+  notes text,
+  created_at timestamptz not null default now()
+);
+
 create index if not exists requests_business_id_idx on public.requests(business_id);
 create index if not exists requests_status_idx on public.requests(status);
 create index if not exists profiles_business_id_idx on public.profiles(business_id);
 create index if not exists projects_business_id_idx on public.projects(business_id);
 create index if not exists projects_status_idx on public.projects(status);
 create unique index if not exists projects_request_id_unique on public.projects(request_id) where request_id is not null;
+create index if not exists payments_business_id_idx on public.payments(business_id);
+create index if not exists payments_project_id_idx on public.payments(project_id);
+create index if not exists payments_date_idx on public.payments(payment_date);
 
 -- Initial KelvoDigital business ID. Keep this same ID in the website.
 insert into public.businesses (id, name, slug)
@@ -98,6 +111,7 @@ alter table public.businesses enable row level security;
 alter table public.profiles enable row level security;
 alter table public.requests enable row level security;
 alter table public.projects enable row level security;
+alter table public.payments enable row level security;
 
 -- Make policy creation safe to re-run.
 drop policy if exists "members can read own business" on public.businesses;
@@ -109,6 +123,10 @@ drop policy if exists "members can read own projects" on public.projects;
 drop policy if exists "members can create own projects" on public.projects;
 drop policy if exists "members can update own projects" on public.projects;
 drop policy if exists "members can delete own projects" on public.projects;
+drop policy if exists "members can read own payments" on public.payments;
+drop policy if exists "members can create own payments" on public.payments;
+drop policy if exists "members can update own payments" on public.payments;
+drop policy if exists "members can delete own payments" on public.payments;
 
 create policy "members can read own business"
 on public.businesses for select
@@ -160,17 +178,46 @@ on public.projects for delete
 to authenticated
 using (business_id in (select business_id from public.profiles where id = auth.uid()));
 
+create policy "members can read own payments"
+on public.payments for select
+to authenticated
+using (business_id in (select business_id from public.profiles where id = auth.uid()));
+
+create policy "members can create own payments"
+on public.payments for insert
+to authenticated
+with check (
+  business_id in (select business_id from public.profiles where id = auth.uid())
+  and project_id in (
+    select id from public.projects
+    where business_id in (select business_id from public.profiles where id = auth.uid())
+  )
+);
+
+create policy "members can update own payments"
+on public.payments for update
+to authenticated
+using (business_id in (select business_id from public.profiles where id = auth.uid()))
+with check (business_id in (select business_id from public.profiles where id = auth.uid()));
+
+create policy "members can delete own payments"
+on public.payments for delete
+to authenticated
+using (business_id in (select business_id from public.profiles where id = auth.uid()));
+
 -- Least-privilege grants for browser Data API.
 revoke all on public.businesses from anon, authenticated;
 revoke all on public.profiles from anon, authenticated;
 revoke all on public.requests from anon, authenticated;
 revoke all on public.projects from anon, authenticated;
+revoke all on public.payments from anon, authenticated;
 
 grant select on public.businesses to authenticated;
 grant select on public.profiles to authenticated;
 grant insert on public.requests to anon, authenticated;
 grant select, update on public.requests to authenticated;
 grant select, insert, update, delete on public.projects to authenticated;
+grant select, insert, update, delete on public.payments to authenticated;
 
 -- Official owner profile for KelvoDigital. Keep the account private; the business UI does not display the personal name.
 delete from public.profiles

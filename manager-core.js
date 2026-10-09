@@ -1,5 +1,5 @@
 const SUPABASE_URL="https://fbgphoixzpykcpdbfbhd.supabase.co",SUPABASE_KEY="sb_publishable_U9E9amYU8RvRz4J1etv7Sw_svCjP-U-";
-const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY),$=id=>document.getElementById(id),show=(id,on)=>$(id).classList.toggle('hidden',!on);
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,storage:window.sessionStorage,autoRefreshToken:true,detectSessionInUrl:false}}),$=id=>document.getElementById(id),show=(id,on)=>$(id).classList.toggle('hidden',!on);
 let profile=null,requests=[],projects=[],payments=[],documents=[],filter='all',pfilter='all',dfilter='all',selected=null,selectedProject=null,selectedDocument=null,projectRequestId=null;
 const defaultAgreementTerms=`1. Scope of Work: Dareqo Digital will provide the selected service described in this agreement, offer sheet or invoice.
 2. Delivery: Standard target is about 3 weeks after the required content and deposit are received.
@@ -9,13 +9,13 @@ const defaultAgreementTerms=`1. Scope of Work: Dareqo Digital will provide the s
 6. Domain: After the first year, domain renewal is paid by the client.
 7. Search/SEO: Search ranking or customer numbers cannot be guaranteed.
 8. Approval: By accepting/signing, both parties confirm they understand and accept these terms.`;
-function esc(v){return String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]))}
+function esc(v){return String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]))}
 function money(n){return '$'+Number(n||0).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:2})}
 function pretty(s){return String(s||'').replaceAll('_',' ').replace(/\b\w/g,m=>m.toUpperCase())}
 function phoneDigits(v){return String(v||'').replace(/\D/g,'')}
 function paidForProject(id){return payments.filter(p=>p.project_id===id).reduce((a,p)=>a+Number(p.amount||0),0)}
 function remainingForProject(p){return Math.max(0,Number(p.agreed_price||0)-paidForProject(p.id))}
-function shareUrl(d){return location.origin+location.pathname.replace(/manager\.html.*$/,'document.html')+'?token='+encodeURIComponent(d.share_token)}
+function shareUrl(d){return location.origin+location.pathname.replace(/manager\.html.*$/,'document.html')+'#token='+encodeURIComponent(d.share_token)}
 const pageMeta={dashboard:['Today','Only the work that needs your attention.'],requests:['Leads','Contact people, confirm work, or archive what is finished.'],add:['New Lead','Add only what you know now. You can fill in more later.'],projects:['Projects','Keep jobs moving, record money, and archive finished work.'],documents:['Documents','Create agreements, invoices and receipts only when you need them.'],customers:['Customers','A clean contact list built from active leads.'],income:['Money','See paid income, outstanding balances and profit.'],expenses:['Expenses','Record business and project costs.'],settings:['Settings','Business Manager defaults and document information.']};
 function setPage(name){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));const page=$('page-'+name);if(!page)return;page.classList.remove('hidden');document.querySelectorAll('.navbtn').forEach(x=>x.classList.toggle('active',x.dataset.page===name));const meta=pageMeta[name]||['Business Manager',''];$('pageTitle').textContent=meta[0];if($('pageHint'))$('pageHint').textContent=meta[1];window.scrollTo({top:0,behavior:'smooth'});render()}
 function requestTable(list){if(!list.length)return '<div class="empty">Nothing here right now.</div>';return '<div class="tablewrap"><table><thead><tr><th>Customer</th><th>Service</th><th>Status</th></tr></thead><tbody>'+list.map(x=>`<tr class="clickrow requestrow" data-id="${x.id}"><td><b>${esc(x.customer_name)}</b><br><span class="muted">${esc(x.email||x.phone||'')}</span></td><td>${esc(x.service||pretty(x.request_type)||'—')}</td><td><span class="pill${x.archived?' archivedpill':''}">${x.archived?'Archived':esc(pretty(x.status))}</span></td></tr>`).join('')+'</tbody></table></div>'}

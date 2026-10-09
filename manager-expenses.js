@@ -117,3 +117,5 @@ $('deleteExpense').onclick=async()=>{if(!selectedExpense?.id||!confirm('Delete t
    const head=docModal.querySelector('.modalhead');const help=document.createElement('div');help.id='docSimpleHelp';help.className='notice';help.style.margin='14px 0 0';help.innerHTML='<b>Simple flow:</b> choose the document type, check the client and amount, save it, then Preview or Send by WhatsApp/Email.';head?.after(help);
  }
 })();
+
+const customerModule=document.createElement('script');customerModule.src='manager-customers.js?v=1';document.body.appendChild(customerModule);

@@ -28,14 +28,14 @@ th,td{text-align:left;padding:13px;border-bottom:1px solid #23354e}th{color:#9ca
 <section id="login" class="wrap">
  <div class="panel auth">
   <h1>Business Manager</h1>
-  <p class="muted">Sign in with your YoussefDigital owner email. We will send a 6-digit verification code to your email.</p>
+  <p class="muted">Sign in with your YoussefDigital owner email. We will send a verification code to your email.</p>
   <label for="email">Email</label>
   <input id="email" type="email" autocomplete="email" value="kelvocommerce@gmail.com" placeholder="your@email.com">
   <button id="loginBtn" type="button" style="margin-top:16px;width:100%">Send code</button>
   <div id="loginMsg" class="msg"></div>
   <div id="verifyBox" class="hidden">
-   <label for="otp">6-digit code</label>
-   <input id="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456">
+   <label for="otp">Verification code</label>
+   <input id="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="12345678">
    <button id="verifyBtn" type="button" style="margin-top:12px;width:100%">Verify code</button>
   </div>
  </div>
@@ -68,7 +68,7 @@ $("loginBtn").addEventListener("click",async function(){
  const msg=$("loginMsg");
  if(!email){msg.className="msg err";msg.textContent="Please enter your email.";return}
  this.disabled=true;this.textContent="Sending...";
- msg.className="msg";msg.textContent="Sending your 6-digit code...";
+ msg.className="msg";msg.textContent="Sending your verification code...";
  try{
   const result=await client.auth.signInWithOtp({email:email,options:{shouldCreateUser:false}});
   if(result.error){msg.className="msg err";msg.textContent=result.error.message}
@@ -86,7 +86,7 @@ $("verifyBtn").addEventListener("click",async function(){
  const email=$("email").value.trim();
  const token=$("otp").value.trim();
  const msg=$("loginMsg");
- if(!/^\d{6}$/.test(token)){msg.className="msg err";msg.textContent="Enter the 6-digit code from your email.";return}
+ if(!/^\d{8}$/.test(token)){msg.className="msg err";msg.textContent="Enter the 8-digit code from your email.";return}
  this.disabled=true;this.textContent="Verifying...";
  const result=await client.auth.verifyOtp({email:email,token:token,type:"email"});
  if(result.error){msg.className="msg err";msg.textContent=result.error.message}

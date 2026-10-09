@@ -1,4 +1,4 @@
--- YoussefDigital Business Manager - Supabase schema
+-- KelvoDigital Business Manager - Supabase schema
 -- Safe to re-run in Supabase SQL Editor.
 
 create extension if not exists pgcrypto;
@@ -71,9 +71,9 @@ create index if not exists projects_business_id_idx on public.projects(business_
 create index if not exists projects_status_idx on public.projects(status);
 create unique index if not exists projects_request_id_unique on public.projects(request_id) where request_id is not null;
 
--- Initial YoussefDigital business ID. Keep this same ID in the website.
+-- Initial KelvoDigital business ID. Keep this same ID in the website.
 insert into public.businesses (id, name, slug)
-values ('11111111-1111-1111-1111-111111111111', 'YoussefDigital', 'youssefdigital')
+values ('11111111-1111-1111-1111-111111111111', 'KelvoDigital', 'kelvodigital')
 on conflict (id) do update set name=excluded.name, slug=excluded.slug;
 
 create or replace function public.set_updated_at()
@@ -172,10 +172,10 @@ grant insert on public.requests to anon, authenticated;
 grant select, update on public.requests to authenticated;
 grant select, insert, update, delete on public.projects to authenticated;
 
--- Official owner profile for YoussefDigital.
+-- Official owner profile for KelvoDigital. Keep the account private; the business UI does not display the personal name.
 delete from public.profiles
 where id = 'a0706c0b-2a9c-4c97-959e-6d0c3ecd8869';
 
 insert into public.profiles (id, business_id, full_name, role)
-values ('7003c6e6-3b42-4e77-8bb2-2fba6fee6616', '11111111-1111-1111-1111-111111111111', 'Youssef Haddad', 'owner')
+values ('7003c6e6-3b42-4e77-8bb2-2fba6fee6616', '11111111-1111-1111-1111-111111111111', 'KelvoDigital', 'owner')
 on conflict (id) do update set business_id=excluded.business_id, full_name=excluded.full_name, role=excluded.role;

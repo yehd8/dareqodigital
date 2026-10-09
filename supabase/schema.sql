@@ -117,7 +117,11 @@ grant select on public.profiles to authenticated;
 grant insert on public.requests to anon, authenticated;
 grant select, update on public.requests to authenticated;
 
--- Owner profile for YoussefDigital
+-- Official owner profile for YoussefDigital.
+-- Remove the previous owner mapping, then link kelvocommerce@gmail.com's Auth UID.
+delete from public.profiles
+where id = 'a0706c0b-2a9c-4c97-959e-6d0c3ecd8869';
+
 insert into public.profiles (id, business_id, full_name, role)
-values ('a0706c0b-2a9c-4c97-959e-6d0c3ecd8869', '11111111-1111-1111-1111-111111111111', 'Youssef Haddad', 'owner')
+values ('7003c6e6-3b42-4e77-8bb2-2fba6fee6616', '11111111-1111-1111-1111-111111111111', 'Youssef Haddad', 'owner')
 on conflict (id) do update set business_id=excluded.business_id, full_name=excluded.full_name, role=excluded.role;

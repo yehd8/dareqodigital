@@ -6,121 +6,88 @@
 <title>YoussefDigital Business Manager</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{margin:0;font-family:system-ui,-apple-system,sans-serif;background:#07101d;color:#edf3ff}
-.wrap{max-width:1100px;margin:auto;padding:28px 20px}
-.panel{background:#101c2d;border:1px solid #293c58;border-radius:16px;padding:24px}
-.auth{max-width:440px;margin:80px auto}
-label{display:block;font-weight:700;margin:14px 0 6px}
-input,textarea{width:100%;box-sizing:border-box;background:#0b1728;color:#fff;border:1px solid #344963;border-radius:9px;padding:12px}
-button,.btn{border:0;border-radius:9px;padding:11px 15px;background:#5b7cff;color:#fff;font-weight:800;cursor:pointer;text-decoration:none}
-button:disabled{opacity:.6;cursor:wait}
-.hidden{display:none}.muted{color:#9cabc0}.msg{margin-top:12px;font-weight:700}.ok{color:#70e1d0}.err{color:#ff9292}
-.top{display:flex;justify-content:space-between;gap:15px;align-items:center}.actions{display:flex;gap:8px;flex-wrap:wrap}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}.card{background:#101c2d;border:1px solid #293c58;border-radius:14px;padding:18px}.num{font-size:30px;font-weight:900}
-.notice{padding:14px;border:1px solid #344963;border-radius:11px;background:#0d192a;margin:18px 0}
-table{width:100%;border-collapse:collapse;background:#101c2d;border:1px solid #293c58;border-radius:14px;overflow:hidden}
-th,td{text-align:left;padding:13px;border-bottom:1px solid #23354e}th{color:#9cabc0;font-size:12px;text-transform:uppercase}
-.pill{padding:5px 9px;border-radius:999px;background:#263753;color:#a9c0ff;font-size:12px;font-weight:800}
-@media(max-width:700px){.cards{grid-template-columns:1fr 1fr}.top{align-items:flex-start;flex-direction:column}table{font-size:13px}}
+:root{--bg:#07101d;--panel:#101c2d;--panel2:#0c1727;--line:#293c58;--text:#edf3ff;--muted:#9cabc0;--blue:#5b7cff;--ok:#70e1d0;--danger:#ff9292}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}button,input,textarea,select{font:inherit}.hidden{display:none!important}.muted{color:var(--muted)}.msg{margin-top:10px;font-weight:700}.ok{color:var(--ok)}.err{color:var(--danger)}
+.authwrap{max-width:480px;margin:80px auto;padding:20px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px}label{display:block;font-weight:750;margin:12px 0 6px}input,textarea,select{width:100%;background:#0b1728;color:#fff;border:1px solid #344963;border-radius:9px;padding:11px}textarea{min-height:96px;resize:vertical}.btn,button{border:0;border-radius:9px;padding:10px 14px;background:var(--blue);color:#fff;font-weight:800;cursor:pointer;text-decoration:none}.btn.secondary,button.secondary{background:#21324a}.btn.danger,button.danger{background:#7d2f3d}.btn.ghost,button.ghost{background:transparent;border:1px solid var(--line)}button:disabled{opacity:.6;cursor:wait}
+.app{min-height:100vh;display:grid;grid-template-columns:245px 1fr}.sidebar{border-right:1px solid var(--line);background:#091321;padding:20px 14px;position:sticky;top:0;height:100vh}.brand{font-size:22px;font-weight:900;padding:8px 10px 20px}.navbtn{width:100%;text-align:left;background:transparent;border:0;color:#cbd7e8;padding:11px 12px;border-radius:9px;margin:3px 0}.navbtn:hover,.navbtn.active{background:#17253a;color:#fff}.sidebottom{position:absolute;bottom:18px;left:14px;right:14px}.main{padding:28px;min-width:0}.topbar{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:18px}.topbar h1{margin:0}.actions{display:flex;gap:8px;flex-wrap:wrap}.notice{padding:13px;border:1px solid #344963;border-radius:11px;background:#0d192a;margin-bottom:18px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.num{font-size:30px;font-weight:900;margin-top:4px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.filter{background:#15243a}.filter.active{background:var(--blue)}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;background:var(--panel);min-width:760px}th,td{text-align:left;padding:13px;border-bottom:1px solid #23354e}th{color:var(--muted);font-size:12px;text-transform:uppercase}.clickrow{cursor:pointer}.clickrow:hover{background:#15243a}.pill{padding:5px 9px;border-radius:999px;background:#263753;color:#b7c7ff;font-size:12px;font-weight:800}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.section{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:14px}.section h2{margin-top:0}.statsline{display:flex;gap:16px;flex-wrap:wrap}.statmini{background:#0b1728;border:1px solid var(--line);padding:12px 14px;border-radius:10px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.58);display:flex;align-items:center;justify-content:center;padding:18px;z-index:20}.modalbox{width:min(760px,100%);max-height:90vh;overflow:auto;background:#0e1b2c;border:1px solid #365071;border-radius:16px;padding:22px}.modalhead{display:flex;justify-content:space-between;gap:12px;align-items:start}.modalhead h2{margin:0}.close{background:transparent;border:1px solid var(--line);padding:6px 10px}.detailgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.detailitem{background:#0a1524;border:1px solid var(--line);border-radius:10px;padding:11px}.detailitem b{display:block;color:#9fb0c8;font-size:12px;margin-bottom:4px}.empty{padding:30px;text-align:center;color:var(--muted)}
+@media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{height:auto;position:static;border-right:0;border-bottom:1px solid var(--line)}.sidebottom{position:static;margin-top:12px}.navwrap{display:flex;overflow:auto}.navbtn{white-space:nowrap;width:auto}.cards{grid-template-columns:1fr 1fr}.main{padding:20px}.grid2,.detailgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<section id="login" class="wrap">
- <div class="panel auth">
+<section id="login" class="authwrap">
+ <div class="panel">
   <h1>Business Manager</h1>
   <p class="muted">Sign in with your YoussefDigital owner email. We will send a verification code to your email.</p>
-  <label for="email">Email</label>
-  <input id="email" type="email" autocomplete="email" value="kelvocommerce@gmail.com" placeholder="your@email.com">
-  <button id="loginBtn" type="button" style="margin-top:16px;width:100%">Send code</button>
+  <label>Email</label><input id="email" type="email" autocomplete="email" value="kelvocommerce@gmail.com">
+  <button id="loginBtn" style="margin-top:14px;width:100%">Send code</button>
   <div id="loginMsg" class="msg"></div>
-  <div id="verifyBox" class="hidden">
-   <label for="otp">Verification code</label>
-   <input id="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="12345678">
-   <button id="verifyBtn" type="button" style="margin-top:12px;width:100%">Verify code</button>
+  <div id="verifyBox" class="hidden"><label>Verification code</label><input id="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="12345678"><button id="verifyBtn" style="margin-top:12px;width:100%">Verify code</button></div>
+ </div>
+</section>
+
+<section id="app" class="app hidden">
+ <aside class="sidebar">
+  <div class="brand">YoussefDigital</div>
+  <div class="navwrap">
+   <button class="navbtn active" data-page="dashboard">Dashboard</button>
+   <button class="navbtn" data-page="requests">Requests</button>
+   <button class="navbtn" data-page="add">+ Add Request</button>
+   <button class="navbtn" data-page="customers">Customers</button>
+   <button class="navbtn" data-page="income">Income</button>
+   <button class="navbtn" data-page="settings">Settings</button>
   </div>
- </div>
+  <div class="sidebottom"><a class="btn ghost" href="index.html" style="display:block;text-align:center;margin-bottom:8px">Open Website</a><button id="logout" class="secondary" style="width:100%">Sign out</button></div>
+ </aside>
+ <main class="main">
+  <div class="topbar"><div><h1 id="pageTitle">Dashboard</h1><div id="userInfo" class="muted"></div></div><div class="actions"><button id="refreshBtn" class="secondary">Refresh</button></div></div>
+  <div id="globalMsg" class="msg"></div>
+
+  <section id="page-dashboard" class="page">
+   <div class="notice"><b>Manual workflow:</b> New website requests arrive as Pending. Review them, contact the customer, then confirm manually.</div>
+   <div class="cards"><div class="card"><div class="muted">Pending</div><div id="pending" class="num">0</div></div><div class="card"><div class="muted">Contacted</div><div id="contacted" class="num">0</div></div><div class="card"><div class="muted">Confirmed</div><div id="confirmed" class="num">0</div></div><div class="card"><div class="muted">Income</div><div id="income" class="num">$0</div></div></div>
+   <div class="section"><h2>Recent requests</h2><div id="dashboardTable"></div></div>
+  </section>
+
+  <section id="page-requests" class="page hidden">
+   <div class="toolbar" id="filters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="quote">Quotes</button><button class="filter" data-filter="booking">Bookings</button><button class="filter" data-filter="pending">Pending</button><button class="filter" data-filter="confirmed">Confirmed</button><button class="filter" data-filter="completed">Completed</button></div>
+   <div id="requestsTable"></div>
+  </section>
+
+  <section id="page-add" class="page hidden">
+   <div class="section"><h2>Enter a request manually</h2><div class="grid2"><div><label>Customer name</label><input id="mName"></div><div><label>Phone / WhatsApp</label><input id="mPhone"></div><div><label>Email</label><input id="mEmail" type="email"></div><div><label>Request type</label><select id="mType"><option value="quote">Request a Quote</option><option value="booking">Book a Service</option></select></div><div><label>Service</label><input id="mService"></div><div><label>Preferred date</label><input id="mDate" type="date"></div><div><label>Preferred time</label><input id="mTime" type="time"></div><div><label>Quoted price</label><input id="mPrice" type="number" step="0.01"></div></div><label>Notes</label><textarea id="mNotes"></textarea><button id="saveManual" style="margin-top:12px">Save as Pending</button><div id="manualMsg" class="msg"></div></div>
+  </section>
+
+  <section id="page-customers" class="page hidden"><div class="section"><h2>Customers</h2><p class="muted">Built automatically from request history.</p><div id="customersList"></div></div></section>
+  <section id="page-income" class="page hidden"><div class="section"><h2>Income overview</h2><div class="statsline"><div class="statmini"><b>Total confirmed/completed</b><div id="incomeTotal" class="num">$0</div></div><div class="statmini"><b>Confirmed jobs</b><div id="incomeJobs" class="num">0</div></div></div></div></section>
+  <section id="page-settings" class="page hidden"><div class="section"><h2>Business Manager settings</h2><p>This connected version uses Supabase authentication, database security policies, and your YoussefDigital business profile.</p><p class="muted">Team management, services/pricing configuration, backups and monitoring are planned next.</p></div></section>
+ </main>
 </section>
-<section id="app" class="wrap hidden">
- <div class="top">
-  <div><h1>Business Manager</h1><div id="userInfo" class="muted"></div></div>
-  <div class="actions"><a class="btn" href="index.html">Website</a><button id="logout" type="button">Sign out</button></div>
- </div>
- <div class="notice"><b>Manual workflow:</b> New website requests arrive as Pending. Review them and contact the customer yourself before confirming.</div>
- <div class="cards">
-  <div class="card"><div class="muted">Pending</div><div id="pending" class="num">0</div></div>
-  <div class="card"><div class="muted">Contacted</div><div id="contacted" class="num">0</div></div>
-  <div class="card"><div class="muted">Confirmed</div><div id="confirmed" class="num">0</div></div>
-  <div class="card"><div class="muted">Income</div><div id="income" class="num">$0</div></div>
- </div>
- <div id="status" class="msg"></div>
- <table><thead><tr><th>Customer</th><th>Service</th><th>Date / time</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table>
-</section>
+
+<div id="detailModal" class="modal hidden"><div class="modalbox"><div class="modalhead"><div><h2 id="dName">Request</h2><div id="dMeta" class="muted"></div></div><button id="closeModal" class="close">✕</button></div><div id="detailGrid" class="detailgrid"></div><label>Internal notes</label><textarea id="dInternal"></textarea><div class="grid2"><div><label>Quoted price</label><input id="dPrice" type="number" step="0.01"></div><div><label>Follow-up date</label><input id="dFollow" type="date"></div></div><div class="toolbar"><button data-status="contacted" class="secondary statusBtn">Mark Contacted</button><button data-status="confirmed" class="statusBtn">Confirm</button><button data-status="completed" class="secondary statusBtn">Complete</button><button data-status="rejected" class="danger statusBtn">Reject</button></div><div class="toolbar"><a id="waBtn" class="btn secondary" target="_blank">WhatsApp</a><a id="emailBtn" class="btn secondary">Email</a><button id="saveDetail" class="secondary">Save notes / price</button></div><div id="detailMsg" class="msg"></div></div></div>
+
 <script>
 (function(){
 const SUPABASE_URL="https://fbgphoixzpykcpdbfbhd.supabase.co";
 const SUPABASE_KEY="sb_publishable_U9E9amYU8RvRz4J1etv7Sw_svCjP-U-";
-const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const $=id=>document.getElementById(id);
-const show=(id,on)=>$(id).classList.toggle("hidden",!on);
-
-$("loginBtn").addEventListener("click",async function(){
- const email=$("email").value.trim();
- const msg=$("loginMsg");
- if(!email){msg.className="msg err";msg.textContent="Please enter your email.";return}
- this.disabled=true;this.textContent="Sending...";
- msg.className="msg";msg.textContent="Sending your verification code...";
- try{
-  const result=await client.auth.signInWithOtp({email:email,options:{shouldCreateUser:false}});
-  if(result.error){msg.className="msg err";msg.textContent=result.error.message}
-  else{
-   msg.className="msg ok";msg.textContent="Code sent. Check your email.";
-   show("verifyBox",true); $("otp").focus();
-  }
- }catch(error){
-  msg.className="msg err";msg.textContent=error&&error.message?error.message:"Could not connect to Supabase."
- }
- this.disabled=false;this.textContent="Send code";
-});
-
-$("verifyBtn").addEventListener("click",async function(){
- const email=$("email").value.trim();
- const token=$("otp").value.trim();
- const msg=$("loginMsg");
- if(!/^\d{8}$/.test(token)){msg.className="msg err";msg.textContent="Enter the 8-digit code from your email.";return}
- this.disabled=true;this.textContent="Verifying...";
- const result=await client.auth.verifyOtp({email:email,token:token,type:"email"});
- if(result.error){msg.className="msg err";msg.textContent=result.error.message}
- else{msg.className="msg ok";msg.textContent="Signed in.";await load()}
- this.disabled=false;this.textContent="Verify code";
-});
-
-async function load(){
- const userResult=await client.auth.getUser();
- const user=userResult.data.user;
- if(!user){show("login",true);show("app",false);return}
- const profile=await client.from("profiles").select("business_id,full_name,role").eq("id",user.id).single();
- if(profile.error||!profile.data){
-  show("login",true);show("app",false);
-  $("loginMsg").className="msg err";
-  $("loginMsg").textContent="Your account is signed in, but it is not linked to Business Manager.";
-  return
- }
- show("login",false);show("app",true);
- $("userInfo").textContent="YoussefDigital · "+(profile.data.full_name||user.email)+" · "+profile.data.role;
- const requests=await client.from("requests").select("*").eq("business_id",profile.data.business_id).order("created_at",{ascending:false});
- if(requests.error){$("status").className="msg err";$("status").textContent=requests.error.message;return}
- const rows=requests.data||[];
- $("pending").textContent=rows.filter(x=>x.status==="pending").length;
- $("contacted").textContent=rows.filter(x=>x.status==="contacted").length;
- $("confirmed").textContent=rows.filter(x=>x.status==="confirmed").length;
- const income=rows.filter(x=>x.status==="confirmed"||x.status==="completed").reduce((n,x)=>n+Number(x.quoted_price||0),0);
- $("income").textContent="$"+income.toLocaleString(undefined,{maximumFractionDigits:2});
- $("rows").innerHTML=rows.length?rows.map(x=>"<tr><td><b>"+escapeHtml(x.customer_name)+"</b><br><span class='muted'>"+escapeHtml(x.email||x.phone||"")+"</span></td><td>"+escapeHtml(x.service||"—")+"</td><td>"+escapeHtml([x.preferred_date,x.preferred_time].filter(Boolean).join(" · ")||"—")+"</td><td><span class='pill'>"+escapeHtml(x.status)+"</span></td></tr>").join(""):"<tr><td colspan='4'>No requests yet.</td></tr>";
-}
-function escapeHtml(value){return String(value==null?"":value).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-$("logout").addEventListener("click",async function(){await client.auth.signOut();window.location.reload()});
-client.auth.onAuthStateChange(function(){setTimeout(load,0)});
-load();
+const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const $=id=>document.getElementById(id);const show=(id,on)=>$(id).classList.toggle('hidden',!on);let profile=null,requests=[],filter='all',selected=null;
+function esc(v){return String(v??'').replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]||c))}
+function money(n){return '$'+Number(n||0).toLocaleString(undefined,{maximumFractionDigits:2})}
+function phoneDigits(v){return String(v||'').replace(/\D/g,'')}
+function setPage(name){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));$('page-'+name).classList.remove('hidden');document.querySelectorAll('.navbtn').forEach(x=>x.classList.toggle('active',x.dataset.page===name));$('pageTitle').textContent=({dashboard:'Dashboard',requests:'Requests',add:'Add Request',customers:'Customers',income:'Income',settings:'Settings'})[name]||'Business Manager';if(name==='customers')renderCustomers();if(name==='income')renderIncome()}
+function tableHtml(list){if(!list.length)return '<div class="empty">No requests found.</div>';return '<div class="tablewrap"><table><thead><tr><th>Customer</th><th>Type</th><th>Service</th><th>Date / time</th><th>Status</th></tr></thead><tbody>'+list.map(x=>`<tr class="clickrow" data-id="${x.id}"><td><b>${esc(x.customer_name)}</b><br><span class="muted">${esc(x.email||x.phone||'')}</span></td><td>${esc(x.request_type)}</td><td>${esc(x.service||'—')}</td><td>${esc([x.preferred_date,x.preferred_time].filter(Boolean).join(' · ')||'—')}</td><td><span class="pill">${esc(x.status)}</span></td></tr>`).join('')+'</tbody></table></div>'}
+function bindRows(){document.querySelectorAll('.clickrow').forEach(r=>r.onclick=()=>openDetail(r.dataset.id))}
+function render(){const p=requests.filter(x=>x.status==='pending').length,c=requests.filter(x=>x.status==='contacted').length,cf=requests.filter(x=>x.status==='confirmed').length,inc=requests.filter(x=>['confirmed','completed'].includes(x.status)).reduce((a,x)=>a+Number(x.quoted_price||0),0);$('pending').textContent=p;$('contacted').textContent=c;$('confirmed').textContent=cf;$('income').textContent=money(inc);$('dashboardTable').innerHTML=tableHtml(requests.slice(0,6));let list=requests;if(filter==='quote'||filter==='booking')list=requests.filter(x=>x.request_type===filter);else if(filter!=='all')list=requests.filter(x=>x.status===filter);$('requestsTable').innerHTML=tableHtml(list);bindRows();renderCustomers();renderIncome()}
+function renderCustomers(){const map=new Map();requests.forEach(x=>{const key=(x.email||x.phone||x.customer_name||'').toLowerCase();if(!map.has(key))map.set(key,x)});const list=[...map.values()];$('customersList').innerHTML=list.length?'<div class="tablewrap"><table><thead><tr><th>Name</th><th>Phone</th><th>Email</th><th>Last service</th></tr></thead><tbody>'+list.map(x=>`<tr><td>${esc(x.customer_name)}</td><td>${esc(x.phone||'—')}</td><td>${esc(x.email||'—')}</td><td>${esc(x.service||'—')}</td></tr>`).join('')+'</tbody></table></div>':'<div class="empty">No customers yet.</div>'}
+function renderIncome(){const good=requests.filter(x=>['confirmed','completed'].includes(x.status));$('incomeTotal').textContent=money(good.reduce((a,x)=>a+Number(x.quoted_price||0),0));$('incomeJobs').textContent=good.length}
+async function refresh(){const q=await client.from('requests').select('*').eq('business_id',profile.business_id).order('created_at',{ascending:false});if(q.error){$('globalMsg').className='msg err';$('globalMsg').textContent=q.error.message;return}requests=q.data||[];$('globalMsg').textContent='';render()}
+async function load(){const u=await client.auth.getUser(),user=u.data.user;if(!user){show('login',true);show('app',false);return}const p=await client.from('profiles').select('business_id,full_name,role').eq('id',user.id).single();if(p.error||!p.data){show('login',true);show('app',false);$('loginMsg').className='msg err';$('loginMsg').textContent='Your account is signed in, but it is not linked to Business Manager.';return}profile=p.data;show('login',false);show('app',true);$('userInfo').textContent='YoussefDigital · '+(profile.full_name||user.email)+' · '+profile.role;await refresh()}
+function openDetail(id){selected=requests.find(x=>x.id===id);if(!selected)return;$('dName').textContent=selected.customer_name||'Request';$('dMeta').textContent=(selected.request_type||'request')+' · '+(selected.status||'pending');const vals=[['Phone',selected.phone],['WhatsApp',selected.whatsapp],['Email',selected.email],['Service',selected.service],['Date',selected.preferred_date],['Time',selected.preferred_time],['Customer notes',selected.notes],['Created',selected.created_at?new Date(selected.created_at).toLocaleString():'']];$('detailGrid').innerHTML=vals.map(v=>`<div class="detailitem"><b>${esc(v[0])}</b>${esc(v[1]||'—')}</div>`).join('');$('dInternal').value=selected.internal_notes||'';$('dPrice').value=selected.quoted_price??'';$('dFollow').value=selected.follow_up_date||'';const pd=phoneDigits(selected.whatsapp||selected.phone);$('waBtn').href=pd?'https://wa.me/'+pd+'?text='+encodeURIComponent(`Hi ${selected.customer_name||''}, this is Youssef. I received your request for ${selected.service||'your service request'}${selected.preferred_date?' for '+selected.preferred_date:''}${selected.preferred_time?' at '+selected.preferred_time:''}. I'd like to confirm the details with you.`):'#';$('emailBtn').href=selected.email?'mailto:'+encodeURIComponent(selected.email)+'?subject='+encodeURIComponent('YoussefDigital request confirmation')+'&body='+encodeURIComponent(`Hi ${selected.customer_name||''},\n\nI received your request for ${selected.service||'our services'}. I would like to confirm the details with you.\n\nYoussefDigital`):'#';show('detailModal',true)}
+async function updateSelected(patch){if(!selected)return;const q=await client.from('requests').update(patch).eq('id',selected.id).eq('business_id',profile.business_id).select().single();if(q.error){$('detailMsg').className='msg err';$('detailMsg').textContent=q.error.message;return false}selected=q.data;$('detailMsg').className='msg ok';$('detailMsg').textContent='Saved.';await refresh();openDetail(selected.id);return true}
+$('loginBtn').onclick=async function(){const email=$('email').value.trim(),msg=$('loginMsg');if(!email){msg.className='msg err';msg.textContent='Please enter your email.';return}this.disabled=true;this.textContent='Sending...';const r=await client.auth.signInWithOtp({email,options:{shouldCreateUser:false}});this.disabled=false;this.textContent='Send code';if(r.error){msg.className='msg err';msg.textContent=r.error.message}else{msg.className='msg ok';msg.textContent='Code sent. Check your email.';show('verifyBox',true);$('otp').focus()}}
+$('verifyBtn').onclick=async function(){const email=$('email').value.trim(),token=$('otp').value.trim(),msg=$('loginMsg');if(!/^\d{8}$/.test(token)){msg.className='msg err';msg.textContent='Enter the 8-digit code from your email.';return}this.disabled=true;const r=await client.auth.verifyOtp({email,token,type:'email'});this.disabled=false;if(r.error){msg.className='msg err';msg.textContent=r.error.message}else{await load()}}
+document.querySelectorAll('.navbtn').forEach(b=>b.onclick=()=>setPage(b.dataset.page));document.querySelectorAll('.filter').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;document.querySelectorAll('.filter').forEach(x=>x.classList.toggle('active',x===b));render()});$('refreshBtn').onclick=refresh;$('logout').onclick=async()=>{await client.auth.signOut();location.reload()};$('closeModal').onclick=()=>show('detailModal',false);$('detailModal').onclick=e=>{if(e.target===$('detailModal'))show('detailModal',false)};
+$('saveManual').onclick=async function(){const name=$('mName').value.trim();if(!name){$('manualMsg').className='msg err';$('manualMsg').textContent='Customer name is required.';return}this.disabled=true;const payload={business_id:profile.business_id,customer_name:name,phone:$('mPhone').value.trim()||null,whatsapp:$('mPhone').value.trim()||null,email:$('mEmail').value.trim()||null,request_type:$('mType').value,service:$('mService').value.trim()||null,preferred_date:$('mDate').value||null,preferred_time:$('mTime').value||null,notes:$('mNotes').value.trim()||null,quoted_price:$('mPrice').value?Number($('mPrice').value):null,status:'pending'};const q=await client.from('requests').insert(payload);this.disabled=false;if(q.error){$('manualMsg').className='msg err';$('manualMsg').textContent=q.error.message}else{$('manualMsg').className='msg ok';$('manualMsg').textContent='Request saved as Pending.';['mName','mPhone','mEmail','mService','mDate','mTime','mPrice','mNotes'].forEach(id=>$(id).value='');await refresh();setPage('requests')}};
+document.querySelectorAll('.statusBtn').forEach(b=>b.onclick=()=>updateSelected({status:b.dataset.status}));$('saveDetail').onclick=()=>updateSelected({internal_notes:$('dInternal').value.trim()||null,quoted_price:$('dPrice').value?Number($('dPrice').value):null,follow_up_date:$('dFollow').value||null});client.auth.onAuthStateChange(()=>setTimeout(load,0));load();
 })();
 </script>
 </body>

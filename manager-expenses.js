@@ -17,6 +17,7 @@ function renderProjectExpenses(){if(!selectedProject)return;const list=expenses.
 const baseOpenProject=openProject;openProject=function(id){baseOpenProject(id);if(selectedProject){show('projectExpenseBox',true);renderProjectExpenses()}}
 const baseBlankProject=blankProject;blankProject=function(){baseBlankProject();show('projectExpenseBox',false)}
 const baseProjectFromRequest=projectFromRequest;projectFromRequest=function(){baseProjectFromRequest();show('projectExpenseBox',false)}
+$('newProjectBtn').onclick=blankProject;$('createProjectBtn').onclick=projectFromRequest;
 
 function populateExpenseProjectSelect(value){$('eProject').innerHTML='<option value="">Business expense (no project)</option>'+projects.map(p=>`<option value="${p.id}">${esc(p.project_name)} — ${esc(p.customer_name)}</option>`).join('');$('eProject').value=value||''}
 function blankExpense(project=null){selectedExpense=null;$('expenseHeading').textContent='Add Expense';$('expenseSub').textContent=project?'Project expense: '+project.project_name:'KelvoDigital expense';$('eName').value='';$('eAmount').value='';$('eDate').value=new Date().toISOString().slice(0,10);$('eCategory').value='Other';populateExpenseProjectSelect(project?.id||'');$('eMethod').value='Personally';$('eSupplier').value='';$('eNotes').value='';$('expenseMsg').textContent='';show('deleteExpense',false);show('expenseModal',true)}

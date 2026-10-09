@@ -1,12 +1,24 @@
-# YoussefDigital
-Public website demo for YoussefDigital.
+# Dareqo Digital
+
+Dareqo Digital builds professional websites, practical business-management systems and local SEO setups for small businesses in Lebanon.
 
 ## Live website
-This repository is intended for GitHub Pages.
+https://yehd8.github.io/youssefdigital/
 
-## Important
-The Business Manager page is a front-end demo. Do not use it for real customer data. A production system needs a secure backend, authentication, database, tenant isolation, backups, monitoring, rate limiting and proper authorization.
+## Business Manager
+https://yehd8.github.io/youssefdigital/manager.html
 
+## Current offer
+- Website — $249
+- Business Manager — $149
+- Website + Business Manager — $349
+- Local SEO Setup — $99
+- Monthly Local SEO Care — $59/month
+- Custom Business System — custom quote
+
+## Contact
 WhatsApp: +961 78 755 934
+Email: kelvocommerce@gmail.com
 
-<!-- GitHub Pages publishing check -->
+## Notes
+The manager is an evolving custom business system backed by Supabase. Production hardening, access-control review, testing and operational monitoring should continue before treating it as a general-purpose SaaS product.

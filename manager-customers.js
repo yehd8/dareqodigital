@@ -24,4 +24,5 @@
  $('cAgreement').onclick=()=>{show('customerModal',false);newDocument('agreement',latest)};
  $('cPayment').onclick=()=>{if(!latest){alert('Create a project first before recording a payment.');return}show('customerModal',false);openProject(latest.id);setTimeout(()=>document.getElementById('paymentAmount')?.focus(),50)};
  show('customerModal',true)}
+ if(profile)renderCustomers();
 })();

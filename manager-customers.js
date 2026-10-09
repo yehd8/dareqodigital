@@ -26,3 +26,5 @@
  show('customerModal',true)}
  if(profile)renderCustomers();
 })();
+
+if(!document.querySelector('script[src^="manager-reminders.js"]')){const reminderModule=document.createElement('script');reminderModule.src='manager-reminders.js?v=1';document.body.appendChild(reminderModule);}

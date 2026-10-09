@@ -3,4 +3,4 @@ Allow: /
 Disallow: /manager.html
 Disallow: /document.html
 
-Sitemap: https://yehd8.github.io/youssefdigital/sitemap.xml
+Sitemap: https://yehd8.github.io/dareqodigital/sitemap.xml

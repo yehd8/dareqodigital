@@ -3,10 +3,10 @@
 Dareqo Digital builds professional websites, practical business-management systems and local SEO setups for small businesses in Lebanon.
 
 ## Live website
-https://yehd8.github.io/youssefdigital/
+https://yehd8.github.io/dareqodigital/
 
 ## Business Manager
-https://yehd8.github.io/youssefdigital/manager.html
+https://yehd8.github.io/dareqodigital/manager.html
 
 ## Current offer
 - Website — $249

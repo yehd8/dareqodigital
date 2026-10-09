@@ -28,9 +28,9 @@ th,td{text-align:left;padding:13px;border-bottom:1px solid #23354e}th{color:#9ca
 <section id="login" class="wrap">
  <div class="panel auth">
   <h1>Business Manager</h1>
-  <p class="muted">Sign in with your YoussefDigital email. We will send a 6-digit verification code to your email.</p>
+  <p class="muted">Sign in with your YoussefDigital owner email. We will send a 6-digit verification code to your email.</p>
   <label for="email">Email</label>
-  <input id="email" type="email" autocomplete="email" placeholder="your@email.com">
+  <input id="email" type="email" autocomplete="email" value="kelvocommerce@gmail.com" placeholder="your@email.com">
   <button id="loginBtn" type="button" style="margin-top:16px;width:100%">Send code</button>
   <div id="loginMsg" class="msg"></div>
   <div id="verifyBox" class="hidden">
@@ -59,7 +59,6 @@ th,td{text-align:left;padding:13px;border-bottom:1px solid #23354e}th{color:#9ca
 (function(){
 const SUPABASE_URL="https://fbgphoixzpykcpdbfbhd.supabase.co";
 const SUPABASE_KEY="sb_publishable_U9E9amYU8RvRz4J1etv7Sw_svCjP-U-";
-const BUSINESS_ID="11111111-1111-1111-1111-111111111111";
 const client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 const $=id=>document.getElementById(id);
 const show=(id,on)=>$(id).classList.toggle("hidden",!on);
@@ -71,7 +70,7 @@ $("loginBtn").addEventListener("click",async function(){
  this.disabled=true;this.textContent="Sending...";
  msg.className="msg";msg.textContent="Sending your 6-digit code...";
  try{
-  const result=await client.auth.signInWithOtp({email:email});
+  const result=await client.auth.signInWithOtp({email:email,options:{shouldCreateUser:false}});
   if(result.error){msg.className="msg err";msg.textContent=result.error.message}
   else{
    msg.className="msg ok";msg.textContent="Code sent. Check your email.";
@@ -81,6 +80,18 @@ $("loginBtn").addEventListener("click",async function(){
   msg.className="msg err";msg.textContent=error&&error.message?error.message:"Could not connect to Supabase."
  }
  this.disabled=false;this.textContent="Send code";
+});
+
+$("verifyBtn").addEventListener("click",async function(){
+ const email=$("email").value.trim();
+ const token=$("otp").value.trim();
+ const msg=$("loginMsg");
+ if(!/^\d{6}$/.test(token)){msg.className="msg err";msg.textContent="Enter the 6-digit code from your email.";return}
+ this.disabled=true;this.textContent="Verifying...";
+ const result=await client.auth.verifyOtp({email:email,token:token,type:"email"});
+ if(result.error){msg.className="msg err";msg.textContent=result.error.message}
+ else{msg.className="msg ok";msg.textContent="Signed in.";await load()}
+ this.disabled=false;this.textContent="Verify code";
 });
 
 async function load(){

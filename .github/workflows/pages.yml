@@ -29,6 +29,7 @@ jobs:
           cp \
             index.html \
             manager.html \
+            reset-password.html \
             document.html \
             dareqo-digital-logo.svg \
             manager-core.js \

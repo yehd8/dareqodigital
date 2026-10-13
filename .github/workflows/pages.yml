@@ -30,6 +30,8 @@ jobs:
             index.html \
             development-story.css \
             premium.css \
+            site-story.css \
+            site-story.js \
             build-cinema.css \
             development-story.js \
             manager.html \

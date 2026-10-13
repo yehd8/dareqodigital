@@ -28,6 +28,8 @@ jobs:
           mkdir -p public-site
           cp \
             index.html \
+            development-story.css \
+            development-story.js \
             manager.html \
             reset-password.html \
             document.html \

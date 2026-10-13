@@ -28,8 +28,6 @@ jobs:
           mkdir -p public-site
           cp \
             index.html \
-            dareqo-story.css \
-            dareqo-story.js \
             manager.html \
             reset-password.html \
             document.html \

@@ -30,6 +30,7 @@ jobs:
             index.html \
             development-story.css \
             premium.css \
+            build-cinema.css \
             development-story.js \
             manager.html \
             reset-password.html \

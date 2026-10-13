@@ -28,14 +28,8 @@ jobs:
           mkdir -p public-site
           cp \
             index.html \
-            development-story.css \
-            premium.css \
-            site-story.css \
-            continuous-story.css \
-            continuous-story.js \
-            site-story.js \
-            build-cinema.css \
-            development-story.js \
+            dareqo-story.css \
+            dareqo-story.js \
             manager.html \
             reset-password.html \
             document.html \

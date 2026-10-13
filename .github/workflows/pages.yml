@@ -31,6 +31,8 @@ jobs:
             development-story.css \
             premium.css \
             site-story.css \
+            continuous-story.css \
+            continuous-story.js \
             site-story.js \
             build-cinema.css \
             development-story.js \

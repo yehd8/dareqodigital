@@ -29,6 +29,7 @@ jobs:
           cp \
             index.html \
             development-story.css \
+            premium.css \
             development-story.js \
             manager.html \
             reset-password.html \

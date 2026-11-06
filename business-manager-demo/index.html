@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Custom Business Manager - Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;600;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS & RESET
+   ============================================================ */
+:root {
+  /* Universal SaaS Palette */
+  --brand: #2563EB;       /* Modern Blue */
+  --brand-hover: #1D4ED8;
+  --bg-main: #F8FAFC;     /* Light Slate */
+  --bg-card: #FFFFFF;
+  --sidebar-bg: #0F172A;  /* Dark Slate */
+  --sidebar-hover: #1E293B;
+  --text-main: #1E293B;
+  --text-muted: #64748B;
+  --border: #E2E8F0;
+  
+  /* Status Colors */
+  --success: #10B981;
+  --success-bg: #D1FAE5;
+  --warning: #F59E0B;
+  --warning-bg: #FEF3C7;
+  --danger: #EF4444;
+  --danger-bg: #FEE2E2;
+  
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-arabic: 'Cairo', sans-serif;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: 0.2s ease-in-out;
+  --sidebar-width: 260px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-main);
+  color: var(--text-main);
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Arabic Typography */
+[dir="rtl"] body { font-family: var(--font-arabic); }
+[dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] h4, [dir="rtl"] .logo-text { font-family: var(--font-arabic); }
+
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 600; }
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; border: none; outline: none; }
+ul { list-style: none; }
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
+.app-container {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition);
+  z-index: 100;
+}
+.sidebar-header {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-icon {
+  width: 32px; height: 32px; 
+  background: linear-gradient(135deg, var(--brand), #60A5FA);
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  color: white;
+}
+.logo-icon svg { width: 20px; height: 20px; fill: currentColor; }
+.logo-text { font-family: var(--font-display); font-weight: 600; font-size: 18px; }
+
+.sidebar-nav { padding: 24px 16px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: var(--radius-sm);
+  color: #94A3B8; font-weight: 500; font-size: 14px;
+  transition: var(--transition); cursor: pointer;
+}
+.nav-item:hover { background: var(--sidebar-hover); color: #F8FAFC; }
+.nav-item.active { background: var(--brand); color: #FFFFFF; }
+.nav-item svg { width: 20px; height: 20px; fill: currentColor; }
+
+.sidebar-footer {
+  padding: 24px; border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; gap: 12px;
+}
+.user-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: #334155; display: grid; place-items: center;
+  font-weight: 600; color: #FFFFFF; font-size: 13px;
+}
+.user-info h4 { font-size: 13px; color: #F8FAFC; margin-bottom: 2px; }
+.user-info span { font-size: 11px; color: #64748B; }
+
+/* --- MAIN CONTENT --- */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* TOPBAR */
+.topbar {
+  height: 80px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px;
+}
+.page-title h1 { font-size: 22px; color: var(--text-main); }
+.page-title p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+.topbar-actions { display: flex; align-items: center; gap: 16px; }
+.lang-switch {
+  background: var(--bg-main); border: 1px solid var(--border); color: var(--text-main);
+  padding: 6px 12px; border-radius: 20px; font-weight: 600; font-size: 13px;
+  transition: var(--transition);
+}
+.lang-switch:hover { border-color: var(--brand); color: var(--brand); }
+.btn { padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 500; font-size: 14px; transition: var(--transition); }
+.btn-primary { background: var(--brand); color: var(--bg-card); }
+.btn-primary:hover { background: var(--brand-hover); transform: translateY(-1px); }
+.btn-icon { display: flex; align-items: center; gap: 8px; }
+
+/* VIEWS CONTAINER */
+.views-container {
+  flex: 1; padding: 32px; overflow-y: auto; position: relative;
+}
+.view-section { display: none; animation: fadeIn 0.3s ease forwards; }
+.view-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ============================================================
+   DASHBOARD VIEW
+   ============================================================ */
+.kpi-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px;
+}
+.kpi-card {
+  background: var(--bg-card); padding: 24px; border-radius: var(--radius);
+  border: 1px solid var(--border); position: relative; overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--brand);
+}
+.kpi-title { font-size: 13px; color: var(--text-muted); font-weight: 500; margin-bottom: 12px; }
+.kpi-value { font-size: 28px; font-family: var(--font-display); font-weight: 700; color: var(--text-main); }
+.kpi-trend { font-size: 12px; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+.trend-up { color: var(--success); }
+.trend-down { color: var(--danger); }
+
+.chart-section { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+.chart-box, .activity-box {
+  background: var(--bg-card); border-radius: var(--radius);
+  border: 1px solid var(--border); padding: 24px;
+}
+.box-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.box-header h3 { font-size: 16px; }
+.box-header span { font-size: 13px; color: var(--brand); font-weight: 500; cursor: pointer; }
+
+/* CSS Bar Chart */
+.bar-chart { height: 200px; display: flex; align-items: flex-end; gap: 16px; padding-top: 20px; }
+.chart-bar {
+  flex: 1; background: rgba(37,99,235,0.08); border-radius: 4px 4px 0 0;
+  position: relative; height: var(--height); transition: var(--transition);
+}
+.chart-bar::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: var(--fill); background: var(--brand); border-radius: 4px 4px 0 0;
+}
+.chart-bar:hover::after { background: var(--brand-hover); }
+.chart-bar .tooltip {
+  position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
+  background: var(--text-main); color: var(--bg-card); font-size: 11px; padding: 4px 8px;
+  border-radius: 4px; opacity: 0; pointer-events: none; transition: var(--transition);
+}
+.chart-bar:hover .tooltip { opacity: 1; top: -35px; }
+.chart-labels { display: flex; gap: 16px; margin-top: 12px; }
+.chart-labels span { flex: 1; text-align: center; font-size: 12px; color: var(--text-muted); }
+
+/* Activity List */
+.activity-list { display: flex; flex-direction: column; gap: 16px; }
+.activity-item { display: flex; gap: 12px; align-items: flex-start; }
+.activity-icon {
+  width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.act-blue { background: rgba(37,99,235,0.1); color: var(--brand); }
+.act-green { background: var(--success-bg); color: var(--success); }
+.act-orange { background: var(--warning-bg); color: var(--warning); }
+.activity-details p { font-size: 13px; color: var(--text-main); margin-bottom: 2px; }
+.activity-details span { font-size: 11px; color: var(--text-muted); }
+
+/* ============================================================
+   DATA TABLES
+   ============================================================ */
+.table-container {
+  background: var(--bg-card); border-radius: var(--radius);
+  border: 1px solid var(--border); overflow: hidden;
+}
+.table-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.table-header h3 { font-size: 18px; }
+.data-table { width: 100%; border-collapse: collapse; text-align: left; }
+[dir="rtl"] .data-table { text-align: right; }
+.data-table th {
+  background: var(--bg-main); padding: 16px 24px; font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); font-weight: 600;
+}
+.data-table td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 14px; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(37,99,235,0.02); }
+
+.badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+.badge-success { background: var(--success-bg); color: var(--success); }
+.badge-warning { background: var(--warning-bg); color: var(--warning); }
+.badge-blue { background: rgba(37,99,235,0.1); color: var(--brand); }
+.badge-danger { background: var(--danger-bg); color: var(--danger); }
+
+/* Progress Bar */
+.progress-wrapper { width: 100%; max-width: 120px; }
+.progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--brand); border-radius: 3px; }
+.progress-text { font-size: 11px; color: var(--text-muted); margin-top: 4px; text-align: right; }
+[dir="rtl"] .progress-text { text-align: left; }
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.5); backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
+  opacity: 0; pointer-events: none; transition: var(--transition);
+}
+.modal-overlay.active { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--bg-card); width: 100%; max-width: 480px; border-radius: var(--radius);
+  padding: 32px; transform: translateY(20px); transition: var(--transition);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+.modal-overlay.active .modal { transform: translateY(0); }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.modal-header h2 { font-size: 20px; }
+.modal-close { background: none; font-size: 24px; color: var(--text-muted); transition: var(--transition); }
+.modal-close:hover { color: var(--danger); }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+.form-control {
+  width: 100%; padding: 12px 16px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-family: inherit; font-size: 14px; transition: var(--transition);
+}
+.form-control:focus { border-color: var(--brand); outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+.modal-footer { display: flex; justify-content: flex-end; gap: 12px; margin-top: 32px; }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+.btn-outline:hover { border-color: var(--text-main); }
+
+/* ============================================================
+   DEMO BANNER
+   ============================================================ */
+.demo-banner {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: var(--sidebar-bg); color: white; padding: 10px 24px;
+  border-radius: 30px; font-size: 13px; font-weight: 500; z-index: 999;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  animation: floatIn 0.5s ease-out 1s both;
+}
+@keyframes floatIn { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.demo-banner span { color: var(--brand); font-weight: 700; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 1024px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .chart-section { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar { position: fixed; left: -100%; height: 100vh; }
+  [dir="rtl"] .sidebar { left: auto; right: -100%; }
+  .sidebar.active { left: 0; }
+  [dir="rtl"] .sidebar.active { right: 0; }
+  .main-content { margin-left: 0; }
+  .kpi-grid { grid-template-columns: 1fr; }
+  .data-table { display: block; overflow-x: auto; white-space: nowrap; }
+  .topbar { padding: 0 16px; }
+  .views-container { padding: 16px; }
+  .demo-banner { width: 90%; text-align: center; justify-content: center; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="#" class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        </div>
+        <div class="logo-text">Business Manager</div>
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="switchView('dashboard')">
+        <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        <span data-i18n="nav_dash">Dashboard</span>
+      </div>
+      <div class="nav-item" onclick="switchView('projects')">
+        <svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
+        <span data-i18n="nav_projects">Projects</span>
+      </div>
+      <div class="nav-item" onclick="switchView('clients')">
+        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        <span data-i18n="nav_clients">Clients</span>
+      </div>
+      <div class="nav-item" onclick="switchView('invoices')">
+        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        <span data-i18n="nav_invoices">Invoices</span>
+      </div>
+      <div class="nav-item" onclick="switchView('expenses')">
+        <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
+        <span data-i18n="nav_expenses">Expenses</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-avatar">AD</div>
+      <div class="user-info">
+        <h4>Admin User</h4>
+        <span>Demo Account</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <div class="page-title">
+        <h1 id="pageTitle">Dashboard Overview</h1>
+        <p id="pageSub">Welcome to your custom business manager.</p>
+      </div>
+      <div class="topbar-actions">
+        <button class="lang-switch" id="langSwitch">AR</button>
+        <button class="btn btn-primary btn-icon" onclick="openModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          <span data-i18n="btn_add">Add New</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- VIEWS CONTAINER -->
+    <div class="views-container">
+
+      <!-- 1. DASHBOARD VIEW -->
+      <section class="view-section active" id="view-dashboard">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-title" data-i18n="kpi_revenue">Total Revenue</div>
+            <div class="kpi-value">$0.00</div>
+            <div class="kpi-trend trend-up">↑ Ready for your data</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title" data-i18n="kpi_active">Active Projects</div>
+            <div class="kpi-value">0</div>
+            <div class="kpi-trend trend-up">↑ Ready for your data</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title" data-i18n="kpi_pending">Pending Invoices</div>
+            <div class="kpi-value">$0.00</div>
+            <div class="kpi-trend trend-up">↑ Ready for your data</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-title" data-i18n="kpi_clients">Total Clients</div>
+            <div class="kpi-value">0</div>
+            <div class="kpi-trend trend-up">↑ Ready for your data</div>
+          </div>
+        </div>
+
+        <div class="chart-section">
+          <div class="chart-box">
+            <div class="box-header">
+              <h3 data-i18n="chart_title">Revenue Overview</h3>
+              <span data-i18n="chart_view">View Report</span>
+            </div>
+            <div class="bar-chart">
+              <div class="chart-bar" style="--height: 100%; --fill: 10%;"><div class="tooltip">$0</div></div>
+              <div class="chart-bar" style="--height: 100%; --fill: 10%;"><div class="tooltip">$0</div></div>
+              <div class="chart-bar" style="--height: 100%; --fill: 10%;"><div class="tooltip">$0</div></div>
+              <div class="chart-bar" style="--height: 100%; --fill: 10%;"><div class="tooltip">$0</div></div>
+              <div class="chart-bar" style="--height: 100%; --fill: 10%;"><div class="tooltip">$0</div></div>
+              <div class="chart-bar" style="--height: 100%; --fill: 10%;"><div class="tooltip">$0</div></div>
+            </div>
+            <div class="chart-labels">
+              <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+            </div>
+          </div>
+
+          <div class="activity-box">
+            <div class="box-header">
+              <h3 data-i18n="act_title">Recent Activity</h3>
+            </div>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-icon act-blue">✨</div>
+                <div class="activity-details">
+                  <p data-i18n="act_1">Welcome to the demo!</p>
+                  <span data-i18n="act_1_time">Just now</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon act-green">👤</div>
+                <div class="activity-details">
+                  <p data-i18n="act_2">Try adding a new client using the button above.</p>
+                  <span data-i18n="act_2_time">Step 1</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon act-orange">📁</div>
+                <div class="activity-details">
+                  <p data-i18n="act_3">Then add a project linked to them.</p>
+                  <span data-i18n="act_3_time">Step 2</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. PROJECTS VIEW -->
+      <section class="view-section" id="view-projects">
+        <div class="table-container">
+          <div class="table-header">
+            <h3 data-i18n="tbl_projects">All Projects</h3>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th data-i18n="tbl_proj_name">Project Name</th>
+                <th data-i18n="tbl_proj_client">Client</th>
+                <th data-i18n="tbl_proj_status">Status</th>
+                <th data-i18n="tbl_proj_progress">Progress</th>
+                <th data-i18n="tbl_proj_due">Due Date</th>
+              </tr>
+            </thead>
+            <tbody id="projectsTableBody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. CLIENTS VIEW -->
+      <section class="view-section" id="view-clients">
+        <div class="table-container">
+          <div class="table-header">
+            <h3 data-i18n="tbl_clients">Client Directory</h3>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th data-i18n="tbl_client_name">Name</th>
+                <th data-i18n="tbl_client_company">Company</th>
+                <th data-i18n="tbl_client_email">Email</th>
+                <th data-i18n="tbl_client_phone">Phone</th>
+                <th data-i18n="tbl_client_status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="clientsTableBody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 4. INVOICES VIEW -->
+      <section class="view-section" id="view-invoices">
+        <div class="table-container">
+          <div class="table-header">
+            <h3 data-i18n="tbl_invoices">Recent Invoices</h3>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th data-i18n="tbl_inv_id">Invoice #</th>
+                <th data-i18n="tbl_inv_client">Client</th>
+                <th data-i18n="tbl_inv_amount">Amount</th>
+                <th data-i18n="tbl_inv_date">Date</th>
+                <th data-i18n="tbl_inv_status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="invoicesTableBody">
+              <!-- Populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 5. EXPENSES VIEW -->
+      <section class="view-section" id="view-expenses">
+        <div class="table-container" style="padding: 48px; text-align: center;">
+          <h2 style="margin-bottom: 16px; color: var(--text-main);" data-i18n="exp_title">Expense Tracking</h2>
+          <p style="color: var(--text-muted);" data-i18n="exp_desc">This demo focuses on Clients and Projects. In your custom build, we can track every receipt, software subscription, and ad spend here.</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- DEMO BANNER -->
+<div class="demo-banner">
+  <span>DEMO MODE</span> - Interact with the buttons to see how it works.
+</div>
+
+<!-- ADD NEW MODAL -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 data-i18n="modal_title">Add New Item</h2>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <form id="addForm" onsubmit="handleAddSubmit(event)">
+      <div class="form-group">
+        <label data-i18n="modal_type">What are you adding?</label>
+        <select class="form-control" id="addType">
+          <option value="client" data-i18n="modal_opt_client">New Client</option>
+          <option value="project" data-i18n="modal_opt_project">New Project</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label data-i18n="modal_name">Name / Title</label>
+        <input type="text" class="form-control" id="addName" required placeholder="e.g. John Doe or Website Redesign">
+      </div>
+      <div class="form-group">
+        <label data-i18n="modal_detail">Details (Email or Company)</label>
+        <input type="text" class="form-control" id="addDetail" placeholder="e.g. john@email.com or Acme Corp">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal()" data-i18n="btn_cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary" data-i18n="btn_save">Save Item</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   STATE & DATA (Blank/Generic)
+   ============================================================ */
+let currentLang = 'en';
+let currentView = 'dashboard';
+
+const data = {
+  projects: [],
+  clients: [],
+  invoices: []
+};
+
+/* ============================================================
+   TRANSLATIONS
+   ============================================================ */
+const translations = {
+  en: {
+    nav_dash: "Dashboard", nav_projects: "Projects", nav_clients: "Clients", nav_invoices: "Invoices", nav_expenses: "Expenses",
+    btn_add: "Add New",
+    kpi_revenue: "Total Revenue", kpi_active: "Active Projects", kpi_pending: "Pending Invoices", kpi_clients: "Total Clients",
+    chart_title: "Revenue Overview", chart_view: "View Report", act_title: "Recent Activity",
+    act_1: "Welcome to the demo!", act_1_time: "Just now",
+    act_2: "Try adding a new client using the button above.", act_2_time: "Step 1",
+    act_3: "Then add a project linked to them.", act_3_time: "Step 2",
+    tbl_projects: "All Projects", tbl_proj_name: "Project Name", tbl_proj_client: "Client", tbl_proj_status: "Status", tbl_proj_progress: "Progress", tbl_proj_due: "Due Date",
+    tbl_clients: "Client Directory", tbl_client_name: "Name", tbl_client_company: "Company", tbl_client_email: "Email", tbl_client_phone: "Phone", tbl_client_status: "Status",
+    tbl_invoices: "Recent Invoices", tbl_inv_id: "Invoice #", tbl_inv_client: "Client", tbl_inv_amount: "Amount", tbl_inv_date: "Date", tbl_inv_status: "Status",
+    exp_title: "Expense Tracking", exp_desc: "This demo focuses on Clients and Projects. In your custom build, we can track every receipt, software subscription, and ad spend here.",
+    modal_title: "Add New Item", modal_type: "What are you adding?", modal_opt_client: "New Client", modal_opt_project: "New Project",
+    modal_name: "Name / Title", modal_detail: "Details (Email or Company)", btn_cancel: "Cancel", btn_save: "Save Item",
+    title_dash: "Dashboard Overview", sub_dash: "Welcome to your custom business manager.",
+    title_projects: "Project Management", sub_projects: "Track the status of all your active work.",
+    title_clients: "Client Directory", sub_clients: "Manage your contact list and client details.",
+    title_invoices: "Invoices & Billing", sub_invoices: "Keep track of paid and pending payments.",
+    title_expenses: "Expense Tracking", sub_expenses: "Monitor your business outgoings.",
+    empty_state: "No records found. Click 'Add New' to create one."
+  },
+  ar: {
+    nav_dash: "لوحة التحكم", nav_projects: "المشاريع", nav_clients: "العملاء", nav_invoices: "الفواتير", nav_expenses: "المصاريف",
+    btn_add: "إضافة جديد",
+    kpi_revenue: "إجمالي الإيرادات", kpi_active: "المشاريع النشطة", kpi_pending: "الفواتير المعلقة", kpi_clients: "إجمالي العملاء",
+    chart_title: "نظرة عامة على الإيرادات", chart_view: "عرض التقرير", act_title: "النشاط الأخير",
+    act_1: "مرحباً بك في العرض التجريبي!", act_1_time: "الآن",
+    act_2: "جرب إضافة عميل جديد باستخدام الزر أعلاه.", act_2_time: "الخطوة 1",
+    act_3: "ثم أضف مشروعاً مرتبطاً بهم.", act_3_time: "الخطوة 2",
+    tbl_projects: "جميع المشاريع", tbl_proj_name: "اسم المشروع", tbl_proj_client: "العميل", tbl_proj_status: "الحالة", tbl_proj_progress: "التقدم", tbl_proj_due: "تاريخ الاستحقاق",
+    tbl_clients: "دليل العملاء", tbl_client_name: "الاسم", tbl_client_company: "الشركة", tbl_client_email: "البريد الإلكتروني", tbl_client_phone: "الهاتف", tbl_client_status: "الحالة",
+    tbl_invoices: "أحدث الفواتير", tbl_inv_id: "رقم الفاتورة", tbl_inv_client: "العميل", tbl_inv_amount: "المبلغ", tbl_inv_date: "التاريخ", tbl_inv_status: "الحالة",
+    exp_title: "تتبع المصاريف", exp_desc: "هذا العرض التجريبي يركز على العملاء والمشاريع. في نسختك المخصصة، يمكننا تتبع كل إيصال واشتراك برمجي وإنفاق إعلاني هنا.",
+    modal_title: "إضافة عنصر جديد", modal_type: "ماذا تريد أن تضيف؟", modal_opt_client: "عميل جديد", modal_opt_project: "مشروع جديد",
+    modal_name: "الاسم / العنوان", modal_detail: "التفاصيل (البريد الإلكتروني أو الشركة)", btn_cancel: "إلغاء", btn_save: "حفظ العنصر",
+    title_dash: "نظرة عامة على لوحة التحكم", sub_dash: "مرحباً بك في مدير الأعمال المخصص الخاص بك.",
+    title_projects: "إدارة المشاريع", sub_projects: "تتبع حالة جميع أعمالك النشطة.",
+    title_clients: "دليل العملاء", sub_clients: "إدارة قائمة جهات الاتصال وتفاصيل العملاء.",
+    title_invoices: "الفواتير والفواتير", sub_invoices: "تتبع المدفوعات المدفوعة والمعلقة.",
+    title_expenses: "تتبع المصاريف", sub_expenses: "مراقبة نفقات عملك.",
+    empty_state: "لا توجد سجلات. انقر على 'إضافة جديد' لإنشاء واحد."
+  }
+};
+
+/* ============================================================
+   NAVIGATION & UI LOGIC
+   ============================================================ */
+const pageTitles = {
+  dashboard: { title: 'title_dash', sub: 'sub_dash' },
+  projects: { title: 'title_projects', sub: 'sub_projects' },
+  clients: { title: 'title_clients', sub: 'sub_clients' },
+  invoices: { title: 'title_invoices', sub: 'sub_invoices' },
+  expenses: { title: 'title_expenses', sub: 'sub_expenses' }
+};
+
+function switchView(viewId) {
+  currentView = viewId;
+  
+  // Update sidebar active state
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  // Find the clicked item and make it active
+  const navItems = document.querySelectorAll('.nav-item');
+  navItems.forEach(item => {
+    if(item.getAttribute('onclick').includes(viewId)) item.classList.add('active');
+  });
+
+  // Update views
+  document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+  document.getElementById(`view-${viewId}`).classList.add('active');
+
+  // Update Topbar Text
+  const titles = pageTitles[viewId];
+  document.getElementById('pageTitle').textContent = translations[currentLang][titles.title];
+  document.getElementById('pageSub').textContent = translations[currentLang][titles.sub];
+
+  // Render tables if needed
+  if (viewId === 'projects') renderProjects();
+  if (viewId === 'clients') renderClients();
+  if (viewId === 'invoices') renderInvoices();
+
+  // Close sidebar on mobile
+  document.getElementById('sidebar').classList.remove('active');
+}
+
+/* ============================================================
+   RENDER TABLES
+   ============================================================ */
+function renderProjects() {
+  const tbody = document.getElementById('projectsTableBody');
+  if (data.projects.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding: 32px;">${translations[currentLang].empty_state}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.projects.map(p => `
+    <tr>
+      <td><strong>${p.name}</strong></td>
+      <td>${p.client}</td>
+      <td>
+        <span class="badge ${p.status === 'Completed' ? 'badge-success' : p.status === 'In Progress' ? 'badge-blue' : 'badge-warning'}">
+          ${p.status}
+        </span>
+      </td>
+      <td>
+        <div class="progress-wrapper">
+          <div class="progress-bar"><div class="progress-fill" style="width: ${p.progress}%"></div></div>
+          <div class="progress-text">${p.progress}%</div>
+        </div>
+      </td>
+      <td>${p.due}</td>
+    </tr>
+  `).join('');
+}
+
+function renderClients() {
+  const tbody = document.getElementById('clientsTableBody');
+  if (data.clients.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding: 32px;">${translations[currentLang].empty_state}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.clients.map(c => `
+    <tr>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.company}</td>
+      <td>${c.email}</td>
+      <td>${c.phone}</td>
+      <td>
+        <span class="badge ${c.status === 'Active' ? 'badge-success' : 'badge-warning'}">
+          ${c.status}
+        </span>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderInvoices() {
+  const tbody = document.getElementById('invoicesTableBody');
+  if (data.invoices.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding: 32px;">${translations[currentLang].empty_state}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = data.invoices.map(i => `
+    <tr>
+      <td><strong>${i.id}</strong></td>
+      <td>${i.client}</td>
+      <td>${i.amount}</td>
+      <td>${i.date}</td>
+      <td>
+        <span class="badge ${i.status === 'Paid' ? 'badge-success' : i.status === 'Unpaid' ? 'badge-warning' : 'badge-danger'}">
+          ${i.status}
+        </span>
+      </td>
+    </tr>
+  `).join('');
+}
+
+/* ============================================================
+   MODAL & FORM LOGIC
+   ============================================================ */
+const modal = document.getElementById('addModal');
+const addForm = document.getElementById('addForm');
+
+function openModal() {
+  modal.classList.add('active');
+  addForm.reset();
+}
+
+function closeModal() {
+  modal.classList.remove('active');
+}
+
+function handleAddSubmit(e) {
+  e.preventDefault();
+  const type = document.getElementById('addType').value;
+  const name = document.getElementById('addName').value;
+  const detail = document.getElementById('addDetail').value;
+
+  if (type === 'client') {
+    data.clients.unshift({
+      id: Date.now(),
+      name: name,
+      company: detail || "N/A",
+      email: "pending@example.com",
+      phone: "N/A",
+      status: "Active"
+    });
+    if (currentView === 'clients') renderClients();
+    switchView('clients'); // Auto-switch to show the result
+  } else if (type === 'project') {
+    data.projects.unshift({
+      id: Date.now(),
+      name: name,
+      client: detail || "N/A",
+      status: "Pending",
+      progress: 0,
+      due: new Date().toISOString().split('T')[0]
+    });
+    if (currentView === 'projects') renderProjects();
+    switchView('projects'); // Auto-switch to show the result
+  }
+
+  closeModal();
+  
+  // Quick feedback
+  const btn = e.target.querySelector('button[type="submit"]');
+  const originalText = btn.textContent;
+  btn.textContent = currentLang === 'en' ? 'Saved!' : 'تم الحفظ!';
+  btn.style.background = 'var(--success)';
+  setTimeout(() => {
+    btn.textContent = originalText;
+    btn.style.background = '';
+  }, 2000);
+}
+
+// Close modal on outside click
+modal.addEventListener('click', (e) => {
+  if (e.target === modal) closeModal();
+});
+
+/* ============================================================
+   LANGUAGE SWITCHER
+   ============================================================ */
+const langBtn = document.getElementById('langSwitch');
+langBtn.addEventListener('click', () => {
+  currentLang = currentLang === 'en' ? 'ar' : 'en';
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+  langBtn.textContent = currentLang === 'en' ? 'AR' : 'EN';
+
+  // Update all text
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[currentLang][key]) {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = translations[currentLang][key];
+      } else if (el.tagName === 'OPTION') {
+        el.textContent = translations[currentLang][key];
+      } else {
+        el.textContent = translations[currentLang][key];
+      }
+    }
+  });
+
+  // Update Topbar title
+  const titles = pageTitles[currentView];
+  document.getElementById('pageTitle').textContent = translations[currentLang][titles.title];
+  document.getElementById('pageSub').textContent = translations[currentLang][titles.sub];
+
+  // Re-render tables to update dynamically generated text
+  if (currentView === 'projects') renderProjects();
+  if (currentView === 'clients') renderClients();
+  if (currentView === 'invoices') renderInvoices();
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+// Initial render to show empty states
+renderProjects();
+renderClients();
+renderInvoices();
+</script>
+</body>
+</html>

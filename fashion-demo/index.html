@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fashion Atelier — Luxury Clothing Boutique Demo</title>
+<meta name="description" content="Luxury clothing boutique demo. Replace the placeholder brand name and contact details with your own business.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ivory:#f4efe7;
+  --ivory-2:#ece5da;
+  --ink:#14110d;
+  --ink-soft:#2a251f;
+  --muted:#7d746a;
+  --gold:#a78a5b;
+  --gold-soft:#c9ab7c;
+  --line:rgba(20,17,13,.13);
+  --line-soft:rgba(20,17,13,.07);
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Jost',system-ui,sans-serif;
+  --wrap:1260px;
+  --pad:clamp(20px,5vw,56px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:100px}
+body{
+  background:var(--ivory);color:var(--ink);
+  font-family:var(--sans);font-weight:300;line-height:1.75;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body.loading,body.menu-open{overflow:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+::selection{background:var(--ink);color:var(--ivory)}
+@media (hover:hover) and (pointer:fine){
+  body,a,button,.prod,.g-item,.cat{cursor:none}
+}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:400;line-height:1.06;letter-spacing:-.005em}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+.sec{padding:clamp(80px,10vw,140px) 0}
+.eyebrow{
+  font-size:10.5px;font-weight:400;letter-spacing:.42em;text-transform:uppercase;
+  color:var(--gold);display:flex;align-items:center;gap:14px;
+}
+.eyebrow-line{width:44px;height:1px;background:var(--gold);display:inline-block;flex:none;opacity:.7}
+.sec-title{font-size:clamp(38px,5.2vw,70px);margin:20px 0 24px}
+.sec-title em{font-style:italic;color:var(--gold)}
+.sec-intro{max-width:540px;color:var(--muted);font-size:15px}
+.sec-head{margin-bottom:clamp(40px,6vw,72px)}
+
+/* BUTTONS */
+.btn{
+  position:relative;z-index:0;display:inline-flex;align-items:center;justify-content:center;
+  padding:17px 38px;border:1px solid var(--ink);color:var(--ink);
+  font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;font-weight:400;
+  overflow:hidden;transition:color .45s ease,border-color .45s ease;background:none;
+}
+.btn::before{
+  content:'';position:absolute;inset:0;z-index:-1;background:var(--ink);
+  transform:translateY(101%);transition:transform .55s cubic-bezier(.19,1,.22,1);
+}
+.btn:hover::before{transform:translateY(0)}
+.btn:hover{color:var(--ivory)}
+.btn-solid{background:var(--ink);color:var(--ivory);border-color:var(--ink)}
+.btn-solid::before{background:var(--gold)}
+.btn-solid:hover{color:var(--ink);border-color:var(--gold)}
+.btn-light{border-color:rgba(244,239,231,.6);color:var(--ivory)}
+.btn-light::before{background:var(--ivory)}
+.btn-light:hover{color:var(--ink);border-color:var(--ivory)}
+.btn-small{padding:13px 26px;font-size:9.5px;letter-spacing:.26em}
+
+/* LOADER */
+.loader{
+  position:fixed;inset:0;z-index:10000;background:var(--ivory);
+  display:grid;place-items:center;transition:opacity .9s ease,visibility .9s;
+}
+.loader.done{opacity:0;visibility:hidden;pointer-events:none}
+.loader-inner{text-align:center}
+.loader-mark{font-size:18px;color:var(--gold);animation:pulse 1.7s ease-in-out infinite}
+.loader-name{
+  font-family:var(--serif);font-size:14px;letter-spacing:.52em;text-transform:uppercase;
+  margin-top:20px;color:var(--ink);padding-left:.52em;
+}
+.loader-bar{width:200px;height:1px;background:rgba(20,17,13,.14);margin:28px auto 0;overflow:hidden}
+.loader-bar span{
+  display:block;height:100%;width:100%;background:var(--gold);
+  transform:translateX(-101%);animation:loadbar 1.6s cubic-bezier(.65,0,.35,1) forwards;
+}
+@keyframes loadbar{to{transform:translateX(0)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* PROGRESS */
+.progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:950;pointer-events:none}
+.progress span{
+  display:block;height:100%;width:0;background:var(--gold);
+  transition:width .1s linear;
+}
+
+/* CURSOR + GRAIN */
+.cursor{
+  position:fixed;top:0;left:0;width:36px;height:36px;border:1px solid rgba(20,17,13,.45);
+  border-radius:50%;pointer-events:none;z-index:9998;display:none;
+  transition:width .35s ease,height .35s ease,background .35s ease,border-color .35s ease;
+  will-change:transform;
+}
+.cursor.grow{width:70px;height:70px;background:rgba(167,138,91,.12);border-color:var(--gold)}
+.cursor-dot{
+  position:fixed;top:0;left:0;width:4px;height:4px;border-radius:50%;
+  background:var(--ink);pointer-events:none;z-index:9999;will-change:transform;display:none;
+}
+@media (hover:hover) and (pointer:fine){
+  .cursor,.cursor-dot{display:block}
+}
+.grain{
+  position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* NAV */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;color:var(--ivory);
+  border-bottom:1px solid transparent;
+  transition:transform .55s cubic-bezier(.19,1,.22,1),background .45s ease,
+             border-color .45s ease,color .45s ease,backdrop-filter .45s;
+}
+.nav.scrolled{
+  background:rgba(244,239,231,.94);backdrop-filter:blur(16px);
+  color:var(--ink);border-bottom-color:var(--line);
+}
+.nav.hide{transform:translateY(-101%)}
+.nav-inner{
+  max-width:var(--wrap);margin:0 auto;padding:22px var(--pad);
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+}
+.brand{
+  font-family:var(--serif);font-size:16px;letter-spacing:.36em;text-transform:uppercase;
+  display:flex;align-items:center;gap:12px;white-space:nowrap;
+}
+.brand i{font-style:normal;color:var(--gold);font-size:9px}
+.nav-links{display:flex;align-items:center;gap:38px}
+.nav-links a{
+  font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;
+  opacity:.75;position:relative;padding:6px 0;transition:opacity .3s;
+}
+.nav-links a::after{
+  content:'';position:absolute;left:0;bottom:0;width:100%;height:1px;
+  background:currentColor;transform:scaleX(0);transform-origin:right;
+  transition:transform .5s cubic-bezier(.19,1,.22,1);
+}
+.nav-links a:hover{opacity:1}
+.nav-links a:hover::after{transform:scaleX(1);transform-origin:left}
+.nav-book{flex:none}
+.nav .btn-light{border-color:rgba(244,239,231,.55);color:var(--ivory)}
+.nav.scrolled .btn-light{border-color:var(--ink);color:var(--ink)}
+.nav.scrolled .btn-light::before{background:var(--ink)}
+.nav.scrolled .btn-light:hover{color:var(--ivory)}
+.burger{
+  display:none;width:44px;height:44px;background:none;border:0;
+  flex-direction:column;justify-content:center;align-items:center;gap:7px;z-index:901;
+}
+.burger span{
+  display:block;width:26px;height:1px;background:currentColor;
+  transition:transform .4s,opacity .3s;
+}
+.burger.active span:first-child{transform:translateY(4px) rotate(45deg)}
+.burger.active span:last-child{transform:translateY(-4px) rotate(-45deg)}
+
+/* HERO */
+.hero{
+  position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;
+  overflow:hidden;padding:160px 0 130px;color:var(--ivory);
+}
+.hero-bg{position:absolute;inset:-8% 0;will-change:transform}
+.hero-bg img{
+  width:100%;height:100%;object-fit:cover;
+  filter:saturate(.86) contrast(1.04) brightness(.92);
+  animation:kenburns 30s ease-in-out infinite alternate;
+}
+@keyframes kenburns{from{transform:scale(1.02)}to{transform:scale(1.14)}}
+.hero-shade{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,rgba(15,12,9,.82) 0%,rgba(15,12,9,.62) 36%,rgba(15,12,9,.18) 70%,rgba(15,12,9,.45) 100%),
+    linear-gradient(0deg,rgba(15,12,9,.55) 0%,rgba(15,12,9,0) 45%);
+}
+.hero-content{position:relative;z-index:2;width:100%;max-width:var(--wrap);margin:0 auto;padding:0 var(--pad)}
+.hero-title{
+  font-size:clamp(48px,9vw,128px);line-height:.95;letter-spacing:-.015em;
+  margin:26px 0 30px;color:var(--ivory);
+}
+.hero-title em{font-style:italic;color:var(--gold-soft)}
+.hero-title .line{display:block;overflow:hidden;padding-bottom:.1em;margin-bottom:-.1em}
+.hero-title .line>span{display:block;transform:translateY(116%);transition:transform 1.3s cubic-bezier(.19,1,.22,1)}
+body.loaded .hero-title .line:nth-child(1)>span{transform:none;transition-delay:.2s}
+body.loaded .hero-title .line:nth-child(2)>span{transform:none;transition-delay:.36s}
+.hero-sub{max-width:470px;color:rgba(244,239,231,.78);font-size:15.5px;margin-bottom:40px}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap}
+.hero .eyebrow,.hero-sub,.hero-actions{
+  opacity:0;transform:translateY(26px);
+  transition:opacity 1s ease,transform 1.1s cubic-bezier(.19,1,.22,1);
+}
+.hero .eyebrow{color:var(--gold-soft)}
+body.loaded .hero .eyebrow{opacity:1;transform:none;transition-delay:.35s}
+body.loaded .hero-sub{opacity:1;transform:none;transition-delay:.95s}
+body.loaded .hero-actions{opacity:1;transform:none;transition-delay:1.1s}
+
+.hero-meta{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  border-top:1px solid rgba(244,239,231,.16);
+  opacity:0;transform:translateY(20px);
+  transition:opacity 1.1s ease,transform 1.2s cubic-bezier(.19,1,.22,1);
+}
+body.loaded .hero-meta{opacity:1;transform:none;transition-delay:1.25s}
+.hero-meta .wrap{display:flex;gap:44px;flex-wrap:wrap;padding-top:22px;padding-bottom:22px}
+.hero-meta div{
+  display:flex;align-items:center;gap:12px;font-size:10px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(244,239,231,.7);
+}
+.hero-meta i{font-style:normal;color:var(--gold-soft);font-size:8px}
+
+.hero-side{
+  position:absolute;right:26px;top:50%;z-index:2;
+  writing-mode:vertical-rl;transform:translateY(-50%) rotate(180deg);
+  font-size:9.5px;letter-spacing:.44em;text-transform:uppercase;
+  color:rgba(244,239,231,.5);opacity:0;transition:opacity 1.4s ease 1.4s;
+}
+body.loaded .hero-side{opacity:1}
+.hero-side b{color:var(--gold-soft);font-weight:400}
+
+.scroll-cue{
+  position:absolute;left:50%;bottom:118px;width:1px;height:64px;z-index:2;
+  background:rgba(244,239,231,.2);transform:translate(-50%,26px);opacity:0;
+  transition:opacity 1s ease,transform 1.1s cubic-bezier(.19,1,.22,1);
+}
+body.loaded .scroll-cue{opacity:1;transform:translate(-50%,0);transition-delay:1.3s}
+.scroll-cue span{
+  position:absolute;top:-18px;left:-1px;width:3px;height:18px;background:var(--gold-soft);
+  animation:drop 2.1s cubic-bezier(.65,0,.35,1) infinite;
+}
+@keyframes drop{
+  0%{transform:translateY(0);opacity:0}
+  25%{opacity:1}
+  100%{transform:translateY(82px);opacity:0}
+}
+
+/* MARQUEE */
+.marquee{
+  background:var(--ink);color:var(--ivory);padding:20px 0;overflow:hidden;
+}
+.marquee-track{display:flex;width:max-content;animation:marq 42s linear infinite}
+.marquee-half{display:flex;align-items:center;gap:46px;padding-right:46px}
+.marquee-half span{
+  font-family:var(--serif);font-size:14px;letter-spacing:.36em;text-transform:uppercase;
+  color:rgba(244,239,231,.75);white-space:nowrap;
+}
+.marquee-half i{font-style:normal;color:var(--gold-soft);font-size:8px}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* REVEALS */
+.reveal{
+  opacity:0;transform:translateY(34px);
+  transition:opacity 1s cubic-bezier(.19,1,.22,1),transform 1s cubic-bezier(.19,1,.22,1);
+  transition-delay:var(--d,0s);
+}
+.reveal.in{opacity:1;transform:none}
+.reveal-scale{
+  opacity:0;transform:scale(.955);
+  transition:opacity 1.2s ease,transform 1.3s cubic-bezier(.19,1,.22,1);
+  transition-delay:var(--d,0s);
+}
+.reveal-scale.in{opacity:1;transform:none}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1.02fr;gap:clamp(44px,7vw,110px);align-items:center}
+.about-media{position:relative}
+.about-img{overflow:hidden;background:var(--ivory-2)}
+.about-img img{width:100%;height:100%;object-fit:cover;transition:transform 1.7s cubic-bezier(.19,1,.22,1)}
+.about-img.main{aspect-ratio:4/5}
+.about-media:hover .about-img.main img{transform:scale(1.05)}
+.about-img.small{
+  position:absolute;right:-9%;bottom:-9%;width:46%;aspect-ratio:1;
+  border:9px solid var(--ivory);will-change:transform;
+}
+.about-badge{
+  position:absolute;left:-22px;top:34px;background:var(--ink);color:var(--ivory);
+  padding:15px 20px;display:flex;flex-direction:column;align-items:center;line-height:1;
+  box-shadow:0 24px 60px -26px rgba(20,17,13,.55);
+}
+.about-badge span{font-size:8.5px;letter-spacing:.26em;text-transform:uppercase;opacity:.75}
+.about-badge b{font-family:var(--serif);font-size:26px;font-weight:400;margin-top:8px}
+.about-copy p{color:rgba(20,17,13,.74);font-size:15px;margin-bottom:18px}
+.about-list{list-style:none;margin:36px 0 40px;border-top:1px solid var(--line)}
+.about-list li{
+  display:flex;gap:22px;align-items:baseline;padding:17px 0;
+  border-bottom:1px solid var(--line);font-size:14px;color:var(--ink-soft);
+}
+.about-list li span{
+  font-family:var(--serif);font-size:12px;letter-spacing:.16em;color:var(--gold);flex:none;
+}
+
+/* COLLECTIONS */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.cat{
+  position:relative;overflow:hidden;display:block;aspect-ratio:3/4;background:var(--ivory-2);
+}
+.cat img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform 1.5s cubic-bezier(.19,1,.22,1),filter .9s ease;
+  filter:saturate(.94) brightness(.98);
+}
+.cat:hover img{transform:scale(1.07);filter:saturate(1) brightness(1)}
+.cat::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(0deg,rgba(15,12,9,.62) 0%,rgba(15,12,9,.05) 52%,rgba(15,12,9,0) 100%);
+  transition:opacity .5s ease;
+}
+.cat:hover::after{opacity:.85}
+.cat-body{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;padding:28px;color:var(--ivory);
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+}
+.cat-body h3{font-size:clamp(22px,2.4vw,30px);line-height:1.1}
+.cat-body small{
+  display:block;font-family:var(--sans);font-size:9.5px;letter-spacing:.3em;
+  text-transform:uppercase;opacity:.7;margin-top:8px;
+}
+.cat-arrow{
+  width:38px;height:38px;border:1px solid rgba(244,239,231,.5);border-radius:50%;
+  display:grid;place-items:center;font-size:13px;flex:none;
+  transition:background .4s ease,color .4s ease,border-color .4s ease,transform .4s ease;
+}
+.cat:hover .cat-arrow{background:var(--ivory);color:var(--ink);border-color:var(--ivory);transform:rotate(-45deg)}
+
+/* PRODUCTS */
+.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px 22px}
+.prod{display:block}
+.prod-media{
+  position:relative;overflow:hidden;aspect-ratio:3/4;background:var(--ivory-2);margin-bottom:18px;
+}
+.prod-media img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:opacity .8s ease,transform 1.4s cubic-bezier(.19,1,.22,1);
+}
+.prod-media .img-b{opacity:0}
+.prod:hover .img-a{opacity:0}
+.prod:hover .img-b{opacity:1}
+.prod:hover .prod-media img{transform:scale(1.05)}
+.prod-tag{
+  position:absolute;top:14px;left:14px;z-index:3;background:var(--ivory);color:var(--ink);
+  font-size:8.5px;letter-spacing:.28em;text-transform:uppercase;padding:7px 12px;
+}
+.prod-quick{
+  position:absolute;left:14px;right:14px;bottom:14px;z-index:3;
+  background:rgba(244,239,231,.96);color:var(--ink);
+  font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;text-align:center;
+  padding:14px;transform:translateY(120%);transition:transform .5s cubic-bezier(.19,1,.22,1);
+}
+.prod:hover .prod-quick{transform:none}
+.prod-info{display:flex;justify-content:space-between;align-items:baseline;gap:14px}
+.prod-info h3{font-size:19px;line-height:1.25}
+.prod-info span{font-size:12.5px;letter-spacing:.1em;color:var(--muted);white-space:nowrap}
+.prod-cat{
+  display:block;font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--gold);margin-top:7px;
+}
+
+/* LOOKBOOK */
+.look-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:200px;gap:14px;
+}
+.g-item{position:relative;overflow:hidden;background:var(--ivory-2)}
+.g-item img{
+  width:100%;height:100%;object-fit:cover;
+  filter:saturate(.9) contrast(1.02);
+  transition:transform 1.4s cubic-bezier(.19,1,.22,1),filter .9s ease;
+}
+.g-item:hover img{transform:scale(1.07);filter:saturate(1.05) contrast(1.04)}
+.g-item figcaption{
+  position:absolute;inset:auto 0 0 0;padding:24px;display:flex;align-items:center;gap:14px;
+  font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--ivory);
+  background:linear-gradient(0deg,rgba(15,12,9,.78),rgba(15,12,9,0));
+  opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s;
+}
+.g-item:hover figcaption{opacity:1;transform:none}
+.g-item figcaption span{color:var(--gold-soft)}
+.g-a{grid-column:span 2;grid-row:span 2}
+.g-b{grid-column:span 2}
+
+/* STATS */
+.stats{
+  background:var(--ink);color:var(--ivory);
+  padding:clamp(56px,8vw,96px) 0;
+}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;text-align:center}
+.stat{padding:0 10px}
+.stat + .stat{box-shadow:inset 1px 0 0 rgba(244,239,231,.14)}
+.stat b{
+  display:block;font-family:var(--serif);font-weight:400;
+  font-size:clamp(38px,5vw,64px);line-height:1;color:var(--ivory);
+}
+.stat span{
+  display:block;margin-top:16px;font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;color:rgba(244,239,231,.55);
+}
+
+/* QUOTE */
+.quote-sec{text-align:center;padding:clamp(90px,13vw,170px) 0;background:var(--ivory-2)}
+.quote-mark{font-family:var(--serif);font-size:96px;line-height:.55;color:var(--gold);opacity:.55}
+blockquote{
+  font-family:var(--serif);font-style:italic;font-size:clamp(22px,3.3vw,42px);
+  line-height:1.38;max-width:900px;margin:26px auto 32px;color:var(--ink);
+}
+#quoteText,#quoteAuthor{transition:opacity .65s ease}
+.quote-author{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1.12fr;gap:clamp(44px,7vw,110px);align-items:start}
+.info-list{list-style:none;margin-top:44px;border-top:1px solid var(--line)}
+.info-list li{
+  display:flex;justify-content:space-between;align-items:center;gap:24px;
+  padding:19px 0;border-bottom:1px solid var(--line);
+}
+.info-label{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.info-line{width:56%;height:1px;background:var(--line)}
+.info-note{margin-top:28px;font-size:12.5px;font-style:italic;color:var(--muted);max-width:360px}
+.book-form{display:grid;grid-template-columns:1fr 1fr;gap:28px 24px;align-content:start}
+.field{display:flex;flex-direction:column;gap:9px}
+.field.full{grid-column:1/-1}
+.field label{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+.field input,.field select,.field textarea{
+  width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);
+  border-radius:0;color:var(--ink);font-family:var(--sans);font-weight:300;font-size:15px;
+  padding:10px 2px;outline:none;transition:border-color .35s ease;
+  -webkit-appearance:none;appearance:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-bottom-color:var(--ink)}
+.field input::placeholder,.field textarea::placeholder{color:rgba(20,17,13,.32)}
+.field select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a78a5b' fill='none' stroke-width='1'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 4px center;padding-right:26px;
+}
+.field select option{background:var(--ivory);color:var(--ink)}
+input[type="date"]{color-scheme:light}
+.form-ok{
+  display:none;grid-column:1/-1;padding:16px 20px;font-size:13.5px;
+  border:1px solid rgba(167,138,91,.55);background:rgba(167,138,91,.08);color:var(--ink);
+}
+.form-ok.show{display:block;animation:fadeUp .6s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* FOOTER */
+.footer{background:var(--ink);color:var(--ivory);padding:clamp(60px,8vw,100px) 0 30px}
+.footer-top{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;
+  padding-bottom:48px;border-bottom:1px solid rgba(244,239,231,.14);
+}
+.footer-brand{
+  font-family:var(--serif);font-size:clamp(26px,4vw,44px);letter-spacing:.22em;
+  text-transform:uppercase;display:flex;align-items:center;gap:16px;
+}
+.footer-brand i{font-style:normal;color:var(--gold-soft);font-size:.42em}
+.footer-tag{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:rgba(244,239,231,.5)}
+.footer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:36px;padding:48px 0}
+.footer-grid h4{
+  font-family:var(--sans);font-weight:400;font-size:9.5px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--gold-soft);margin-bottom:22px;
+}
+.footer-grid a{
+  display:block;font-size:13.5px;color:rgba(244,239,231,.6);
+  margin-bottom:11px;transition:color .3s;
+}
+.footer-grid a:hover{color:var(--ivory)}
+.blank{height:1px;width:100%;max-width:180px;background:rgba(244,239,231,.18);margin-bottom:18px}
+.blank.short{max-width:105px}
+.footer-bottom{
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding-top:28px;border-top:1px solid rgba(244,239,231,.14);
+  font-size:10.5px;letter-spacing:.16em;color:rgba(244,239,231,.35);
+}
+
+/* RESPONSIVE */
+@media (max-width:1080px){.nav-links{gap:26px}}
+@media (max-width:960px){
+  .about-grid,.contact-grid{grid-template-columns:1fr}
+  .about-media{max-width:520px}
+  .footer-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:44px 20px}
+  .stat + .stat{box-shadow:none}
+  .prod-grid{grid-template-columns:repeat(2,1fr)}
+  .cat-grid{grid-template-columns:1fr;gap:18px}
+  .cat{aspect-ratio:16/10}
+}
+@media (max-width:900px){
+  .burger{display:flex}
+  .nav-book{display:none}
+  .nav-links{
+    position:fixed;inset:0;z-index:850;background:var(--ivory);color:var(--ink);
+    flex-direction:column;justify-content:center;align-items:center;gap:36px;
+    opacity:0;visibility:hidden;transition:opacity .45s ease,visibility .45s;
+  }
+  .nav-links.open{opacity:1;visibility:visible}
+  .nav-links a{font-size:14px;letter-spacing:.32em;opacity:.85}
+  .nav-links a::after{display:none}
+  .burger.active{color:var(--ink)}
+  .hero-side{display:none}
+  .scroll-cue{display:none}
+  .hero-meta .wrap{gap:22px;padding-top:18px;padding-bottom:18px}
+  .look-grid{grid-auto-rows:180px}
+  .g-a{grid-column:span 2;grid-row:span 1}
+  .g-b{grid-column:span 2}
+}
+@media (max-width:640px){
+  .hero{padding-top:132px}
+  .hero-actions .btn{width:100%}
+  .prod-grid{grid-template-columns:1fr}
+  .look-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px}
+  .g-a{grid-column:span 2}
+  .g-b{grid-column:span 2}
+  .book-form{grid-template-columns:1fr}
+  .about-img.small{width:52%;right:-4%;bottom:-8%}
+  .about-badge{left:-8px;padding:12px 15px}
+  .footer-grid{grid-template-columns:1fr;gap:28px}
+  .stats-grid{gap:36px 12px}
+  .cat-body{padding:20px}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+  }
+  .reveal,.reveal-scale{opacity:1;transform:none}
+  .hero-title .line>span{transform:none}
+  .hero .eyebrow,.hero-sub,.hero-actions,.hero-meta,.scroll-cue,.hero-side{opacity:1;transform:none}
+  .scroll-cue{transform:translate(-50%,0)}
+}
+</style>
+</head>
+<body class="loading">
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <div class="loader-mark">&#9670;</div>
+    <div class="loader-name">Your Brand</div>
+    <div class="loader-bar"><span></span></div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+<!-- CURSOR / GRAIN -->
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <!-- REPLACE: your business name -->
+    <a href="#top" class="brand"><i>&#9670;</i>Your Brand</a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#about">The House</a>
+      <a href="#collections">Collections</a>
+      <a href="#pieces">Pieces</a>
+      <a href="#lookbook">Lookbook</a>
+      <a href="#contact">Visit</a>
+    </nav>
+
+    <a href="#contact" class="btn btn-small btn-light nav-book">Book a Styling</a>
+
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-bg" id="heroBg">
+    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1920&q=80" alt="Fashion editorial">
+  </div>
+  <div class="hero-shade"></div>
+
+  <div class="hero-content">
+    <p class="eyebrow"><span class="eyebrow-line"></span>Autumn / Winter Collection</p>
+    <h1 class="hero-title">
+      <span class="line"><span>Quietly</span></span>
+      <span class="line"><span><em>Uncompromising.</em></span></span>
+    </h1>
+    <p class="hero-sub">A curated wardrobe of considered pieces — natural fibres, honest tailoring and silhouettes designed to outlive the season they were bought in.</p>
+    <div class="hero-actions">
+      <a href="#collections" class="btn btn-light">Explore the Collection</a>
+      <a href="#contact" class="btn btn-solid">Book a Styling</a>
+    </div>
+  </div>
+
+  <div class="hero-side">Scroll to discover <b>— 01</b></div>
+  <a href="#about" class="scroll-cue" aria-label="Scroll down"><span></span></a>
+
+  <div class="hero-meta">
+    <div class="wrap">
+      <div><i>&#9670;</i>Made in Italy</div>
+      <div><i>&#9670;</i>Natural Fibres</div>
+      <div><i>&#9670;</i>Limited Runs</div>
+      <div><i>&#9670;</i>Private Styling</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <div class="marquee-half">
+      <span>Tailoring</span><i>&#9670;</i><span>Knitwear</span><i>&#9670;</i><span>Silk &amp; Linen</span><i>&#9670;</i><span>Leather Goods</span><i>&#9670;</i><span>Private Styling</span><i>&#9670;</i>
+    </div>
+    <div class="marquee-half">
+      <span>Tailoring</span><i>&#9670;</i><span>Knitwear</span><i>&#9670;</i><span>Silk &amp; Linen</span><i>&#9670;</i><span>Leather Goods</span><i>&#9670;</i><span>Private Styling</span><i>&#9670;</i>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="sec" id="about">
+  <div class="wrap about-grid">
+    <div class="about-media reveal-scale">
+      <div class="about-img main">
+        <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=900&q=80" alt="Boutique interior" loading="lazy">
+      </div>
+      <div class="about-img small" id="aboutSmall">
+        <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=600&q=80" alt="Folded garments" loading="lazy">
+      </div>
+      <div class="about-badge"><span>Est.</span><b>1998</b></div>
+    </div>
+
+    <div class="about-copy">
+      <p class="eyebrow reveal"><span class="eyebrow-line"></span>The House</p>
+      <h2 class="sec-title reveal" style="--d:.08s">A wardrobe<br>built slowly,<br><em>kept for years.</em></h2>
+      <p class="reveal" style="--d:.16s">We buy in small numbers from makers we have known for decades. Nothing here is designed to be replaced next season — only to be worn until it feels like yours.</p>
+      <p class="reveal" style="--d:.22s">Our stylists work by appointment, in a quiet room with natural light, so the fitting is never rushed and the advice is never borrowed from a trend report.</p>
+      <ul class="about-list reveal" style="--d:.28s">
+        <li><span>01</span>Natural fibres from mills in Italy, Scotland and Japan</li>
+        <li><span>02</span>Limited runs — usually fewer than forty pieces</li>
+        <li><span>03</span>Complimentary alterations on every garment</li>
+      </ul>
+      <a href="#contact" class="btn reveal" style="--d:.34s">Book a Private Fitting</a>
+    </div>
+  </div>
+</section>
+
+<!-- COLLECTIONS -->
+<section class="sec" id="collections" style="background:var(--ivory-2)">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="eyebrow reveal"><span class="eyebrow-line"></span>The Collections</p>
+      <h2 class="sec-title reveal" style="--d:.08s">Three Rooms</h2>
+      <p class="sec-intro reveal" style="--d:.14s">Tailoring, ready-to-wear and accessories — each curated separately, each edited down to what matters.</p>
+    </header>
+
+    <div class="cat-grid">
+      <a href="#pieces" class="cat reveal">
+        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80" alt="Women's collection" loading="lazy">
+        <div class="cat-body">
+          <div><h3>Women</h3><small>Ready-to-Wear</small></div>
+          <span class="cat-arrow">&#8594;</span>
+        </div>
+      </a>
+
+      <a href="#pieces" class="cat reveal" style="--d:.1s">
+        <img src="https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=800&q=80" alt="Men's collection" loading="lazy">
+        <div class="cat-body">
+          <div><h3>Men</h3><small>Tailoring &amp; Knitwear</small></div>
+          <span class="cat-arrow">&#8594;</span>
+        </div>
+      </a>
+
+      <a href="#pieces" class="cat reveal" style="--d:.2s">
+        <img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=800&q=80" alt="Accessories" loading="lazy">
+        <div class="cat-body">
+          <div><h3>Objects</h3><small>Leather &amp; Accessories</small></div>
+          <span class="cat-arrow">&#8594;</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- PIECES -->
+<section class="sec" id="pieces">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="eyebrow reveal"><span class="eyebrow-line"></span>Selected Pieces</p>
+      <h2 class="sec-title reveal" style="--d:.08s">This Season</h2>
+      <p class="sec-intro reveal" style="--d:.14s">Eight pieces from the current collection. Hover to see the garment on the body.</p>
+    </header>
+
+    <div class="prod-grid">
+      <a href="#contact" class="prod reveal">
+        <div class="prod-media">
+          <span class="prod-tag">New</span>
+          <img class="img-a" src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=700&q=80" alt="Silk shirt" loading="lazy">
+          <img class="img-b" src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=700&q=80" alt="Silk shirt worn" loading="lazy">
+          <span class="prod-quick">Enquire</span>
+        </div>
+        <div class="prod-info"><h3>Silk Charmeuse Shirt</h3><span>&mdash;</span></div>
+        <span class="prod-cat">Women</span>
+      </a>
+
+      <a href="#contact" class="prod reveal" style="--d:.07s">
+        <div class="prod-media">
+          <img class="img-a" src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=700&q=80" alt="Wool blazer" loading="lazy">
+          <img class="img-b" src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=700&q=80" alt="Wool blazer worn" loading="lazy">
+          <span class="prod-quick">Enquire</span>
+        </div>
+        <div class="prod-info"><h3>Tailored Wool Blazer</h3><span>&mdash;</span></div>
+        <span class="prod-cat">Men</span>
+      </a>
+
+      <a href="#contact" class="prod reveal" style="--d:.14s">
+        <div class="prod-media">
+          <span class="prod-tag">Limited</span>
+          <img class="img-a" src="https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=700&q=80" alt="Cashmere knit" loading="lazy">
+          <img class="img-b" src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=700&q=80" alt="Cashmere knit worn" loading="lazy">
+          <span class="prod-quick">Enquire</span>
+        </div>
+        <div class="prod-info"><h3>Cashmere Crew Knit</h3><span>&mdash;</span></div>
+        <span class="prod-cat">Unisex</span>
+      </a>
+
+      <a href="#contact" class="prod reveal" style="--d:.21s">
+        <div class="prod-media">
+          <img class="img-a" src="https://images.unsplash.com/photo-1533867617858-e7b97e060509?auto=format&fit=crop&w=700&q=80" alt="Leather loafers" loading="lazy">
+          <img class="img-b" src="https://images.unsplash.com/photo-1449505278894-297fdb3edbc1?auto=format&fit=crop&w=700&q=80" alt="Leather loafers worn" loading="lazy">
+          <span class="prod-quick">Enquire</span>
+        </div>
+        <div class="prod-info"><h3>Leather Loafers</h3><span>&mdash;</span></div>
+        <span class="prod-cat">Objects</span>
+      </a>
+
+      <a href="#contact" class="prod reveal" style="--d:.28s">
+        <div class="prod-media">
+          <img class="img-a" src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?auto=format&fit=crop&w=700&q=80" alt="Linen trousers" loading="lazy">
+          <img class="img-b" src="https://images.unsplash.com/photo-1594633313593-bab3825d0caf?auto=format&fit=crop&w=700&q=80" alt="Linen trousers worn" loading="lazy">
+          <span class="prod-quick">Enquire</span>
+        </div>
+        <div class="prod-info"><h3>Wide Linen Trouser</h3><span>&mdash;</span></div>
+        <span class="prod-cat">Women</span>
+      </a>
+
+      <a href="#contact" class="prod reveal" style="--d:.35s">
+        <div class="prod-media">
+          <span class="prod-tag">New</span>
+          <img class="img-a" src="https://images.unsplash.com/photo-1520006403909-838d6b92c22e?auto=format&fit=crop&w=700&q=80" alt="Wool coat" loading="lazy">
+          <img class="img-b" src="https://images.unsplash.com/photo-1539533018447-63fcce2678e3?auto=format&fit=crop&w=700&q=80" alt="Wool coat worn" loading="lazy">
+          <span class="prod-quick">Enquire</span>
+        </div>
+        <div class="prod-info"><h3>Double-Faced Coat</h3><span>&mdash;</span></div>
+        <span class="prod-cat">Women</span>
+      </a>
+
+      <a href="#contact" class="prod reveal" style="--d:.42s">
+        <div class="prod-media">
+          <img class="img-a" src="https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=700&q=80" alt="Leather bag" loading="lazy">
+          <img class="img-b" src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=700&q=80" alt="Leather bag detail" loading="lazy">
+          <span class="prod-quick">Enquire</span>
+        </div>
+        <div class="prod-info"><h3>Structured Tote</h3><span>&mdash;</span></div>
+        <span class="prod-cat">Objects</span>
+      </a>
+
+      <a href="#contact" class="prod reveal" style="--d:.49s">
+        <div class="prod-media">
+          <img class="img-a" src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=700&q=80" alt="Cotton shirt" loading="lazy">
+          <img class="img-b" src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=700&q=80" alt="Cotton shirt worn" loading="lazy">
+          <span class="prod-quick">Enquire</span>
+        </div>
+        <div class="prod-info"><h3>Poplin Overshirt</h3><span>&mdash;</span></div>
+        <span class="prod-cat">Men</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- LOOKBOOK -->
+<section class="sec" id="lookbook" style="background:var(--ivory-2)">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="eyebrow reveal"><span class="eyebrow-line"></span>The Lookbook</p>
+      <h2 class="sec-title reveal" style="--d:.08s">Autumn / Winter</h2>
+      <p class="sec-intro reveal" style="--d:.14s">Photographed in the atelier over three quiet mornings.</p>
+    </header>
+
+    <div class="look-grid">
+      <figure class="g-item g-a reveal-scale">
+        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1100&q=80" alt="Look 01" loading="lazy">
+        <figcaption><span>01</span>Ivory Tailoring</figcaption>
+      </figure>
+      <figure class="g-item reveal-scale" style="--d:.06s">
+        <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=800&q=80" alt="Look 02" loading="lazy">
+        <figcaption><span>02</span>Camel &amp; Cream</figcaption>
+      </figure>
+      <figure class="g-item reveal-scale" style="--d:.12s">
+        <img src="https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80" alt="Look 03" loading="lazy">
+        <figcaption><span>03</span>The Overshirt</figcaption>
+      </figure>
+      <figure class="g-item reveal-scale" style="--d:.18s">
+        <img src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?auto=format&fit=crop&w=800&q=80" alt="Look 04" loading="lazy">
+        <figcaption><span>04</span>Soft Structure</figcaption>
+      </figure>
+      <figure class="g-item g-b reveal-scale" style="--d:.24s">
+        <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1100&q=80" alt="Look 05" loading="lazy">
+        <figcaption><span>05</span>Evening Silk</figcaption>
+      </figure>
+      <figure class="g-item reveal-scale" style="--d:.3s">
+        <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=800&q=80" alt="Look 06" loading="lazy">
+        <figcaption><span>06</span>Layering</figcaption>
+      </figure>
+      <figure class="g-item reveal-scale" style="--d:.36s">
+        <img src="https://images.unsplash.com/photo-1485462537746-965f33f7f6a7?auto=format&fit=crop&w=800&q=80" alt="Look 07" loading="lazy">
+        <figcaption><span>07</span>The Coat</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="wrap stats-grid">
+    <div class="stat reveal"><b data-count="27">0</b><span>Years in the house</span></div>
+    <div class="stat reveal" style="--d:.08s"><b data-count="40" data-suffix="+">0</b><span>Makers we work with</span></div>
+    <div class="stat reveal" style="--d:.16s"><b data-count="4.9" data-decimals="1">0</b><span>Average client rating</span></div>
+    <div class="stat reveal" style="--d:.24s"><b data-count="12" data-suffix="k">0</b><span>Wardrobes dressed</span></div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-sec">
+  <div class="wrap">
+    <div class="quote-mark reveal">&ldquo;</div>
+    <blockquote id="quoteText">I came in for one coat and left with a wardrobe that has lasted six winters. That is not something I can say about anywhere else.</blockquote>
+    <p class="quote-author" id="quoteAuthor">&mdash; Client, since 2016</p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec" id="contact">
+  <div class="wrap contact-grid">
+    <div class="contact-info">
+      <p class="eyebrow reveal"><span class="eyebrow-line"></span>Visit</p>
+      <h2 class="sec-title reveal" style="--d:.08s">Book a<br><em>private styling.</em></h2>
+      <p class="sec-intro reveal" style="--d:.14s">Appointments run for an hour and a half in the private fitting room. Tell us what you are looking for and we will have a selection ready.</p>
+
+      <!-- REPLACE: contact details intentionally left blank -->
+      <ul class="info-list reveal" style="--d:.2s">
+        <li><span class="info-label">Atelier</span><span class="info-line"></span></li>
+        <li><span class="info-label">Phone</span><span class="info-line"></span></li>
+        <li><span class="info-label">Email</span><span class="info-line"></span></li>
+        <li><span class="info-label">Hours</span><span class="info-line"></span></li>
+      </ul>
+      <p class="info-note reveal" style="--d:.26s">These lines are intentionally blank — add your boutique address, phone number, email and opening hours here.</p>
+    </div>
+
+    <form class="book-form reveal" id="bookForm" novalidate>
+      <div class="field">
+        <label for="fName">Full name</label>
+        <input id="fName" name="name" type="text" placeholder="Your name" required>
+      </div>
+      <div class="field">
+        <label for="fEmail">Email</label>
+        <input id="fEmail" name="email" type="email" placeholder="you@example.com">
+      </div>
+      <div class="field">
+        <label for="fPhone">Phone</label>
+        <input id="fPhone" name="phone" type="tel" placeholder="Your number" required>
+      </div>
+      <div class="field">
+        <label for="fService">Appointment</label>
+        <select id="fService" name="service">
+          <option>Private Styling</option>
+          <option>Personal Shopping</option>
+          <option>Wardrobe Edit</option>
+          <option>Bridal Consultation</option>
+          <option>Made-to-Measure</option>
+          <option>Alterations Fitting</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fDate">Preferred date</label>
+        <input id="fDate" name="date" type="date" required>
+      </div>
+      <div class="field">
+        <label for="fTime">Preferred time</label>
+        <select id="fTime" name="time">
+          <option>10:00</option><option>11:30</option><option>13:00</option>
+          <option>14:30</option><option>16:00</option><option>17:30</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label for="fNotes">What are you looking for? (optional)</label>
+        <input id="fNotes" name="notes" type="text" placeholder="Occasion, sizes, pieces you have in mind">
+      </div>
+      <div class="field full">
+        <button type="submit" class="btn btn-solid" style="width:100%">Request Appointment</button>
+      </div>
+      <div class="form-ok" id="formOk" role="status"></div>
+    </form>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap footer-top">
+    <!-- REPLACE: your business name -->
+    <div class="footer-brand"><i>&#9670;</i>Your Brand</div>
+    <p class="footer-tag">Fashion Atelier</p>
+  </div>
+
+  <div class="wrap footer-grid">
+    <div>
+      <h4>Atelier</h4>
+      <p class="blank"></p>
+      <p class="blank short"></p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p class="blank"></p>
+      <p class="blank short"></p>
+    </div>
+    <div>
+      <h4>Hours</h4>
+      <p class="blank"></p>
+      <p class="blank short"></p>
+    </div>
+    <div>
+      <h4>Follow</h4>
+      <a href="#">Instagram</a>
+      <a href="#">Pinterest</a>
+      <a href="#">Facebook</a>
+    </div>
+  </div>
+
+  <div class="wrap footer-bottom">
+    <span>&copy; 2026 — All rights reserved.</span>
+    <span>Demo layout — replace with your own content.</span>
+  </div>
+</footer>
+
+<noscript>
+  <style>
+    .loader{display:none!important}
+    body.loading{overflow:auto!important}
+    .hero-title .line>span{transform:none!important}
+    .hero .eyebrow,.hero-sub,.hero-actions,.hero-meta,.scroll-cue,.hero-side{opacity:1!important;transform:none!important}
+    .scroll-cue{transform:translate(-50%,0)!important}
+    .reveal,.reveal-scale{opacity:1!important;transform:none!important}
+    .cursor,.cursor-dot{display:none!important}
+  </style>
+</noscript>
+
+<script>
+(function () {
+  'use strict';
+  var doc = document;
+  var body = doc.body;
+
+  /* ============ LOADER — guaranteed fallback ============ */
+  var loaderDone = false;
+  function finishLoad() {
+    if (loaderDone) return;
+    loaderDone = true;
+    var loader = doc.getElementById('loader');
+    if (loader) loader.classList.add('done');
+    body.classList.remove('loading');
+    body.classList.add('loaded');
+  }
+  window.addEventListener('load', function () { setTimeout(finishLoad, 700); });
+  doc.addEventListener('DOMContentLoaded', function () { setTimeout(finishLoad, 1500); });
+  setTimeout(finishLoad, 3500); /* absolute safety net */
+
+  /* ============ SCROLL PROGRESS ============ */
+  var progressBar = doc.getElementById('progressBar');
+  function updateProgress() {
+    if (!progressBar) return;
+    var h = doc.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.pageYOffset / h) * 100 : 0;
+    progressBar.style.width = p + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  /* ============ CUSTOM CURSOR ============ */
+  var fine = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  if (fine) {
+    var cur = doc.getElementById('cursor');
+    var dot = doc.getElementById('cursorDot');
+    var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+    var mx = cx, my = cy, dx = cx, dy = cy;
+
+    doc.addEventListener('mousemove', function (e) {
+      mx = e.clientX; my = e.clientY;
+    });
+
+    (function loop() {
+      cx += (mx - cx) * 0.16;
+      cy += (my - cy) * 0.16;
+      dx += (mx - dx) * 0.5;
+      dy += (my - dy) * 0.5;
+      if (cur) cur.style.transform = 'translate(' + (cx - 18) + 'px,' + (cy - 18) + 'px)';
+      if (dot) dot.style.transform = 'translate(' + (dx - 2) + 'px,' + (dy - 2) + 'px)';
+      requestAnimationFrame(loop);
+    })();
+
+    var growSel = 'a, button, .prod, .g-item, .cat, input, select, textarea';
+    doc.addEventListener('mouseover', function (e) {
+      if (cur && e.target.closest && e.target.closest(growSel)) cur.classList.add('grow');
+    });
+    doc.addEventListener('mouseout', function (e) {
+      if (cur && e.target.closest && e.target.closest(growSel)) cur.classList.remove('grow');
+    });
+  }
+
+  /* ============ NAV — scrolled + hide on scroll down ============ */
+  var nav = doc.getElementById('nav');
+  var lastY = window.pageYOffset;
+  window.addEventListener('scroll', function () {
+    var y = window.pageYOffset;
+    if (nav) {
+      nav.classList.toggle('scrolled', y > 40);
+      if (y > 460 && y > lastY) nav.classList.add('hide');
+      else nav.classList.remove('hide');
+    }
+    lastY = y;
+  }, { passive: true });
+
+  /* ============ MOBILE MENU ============ */
+  var burger = doc.getElementById('burger');
+  var navLinks = doc.getElementById('navLinks');
+  function setMenu(open) {
+    if (!burger || !navLinks) return;
+    burger.classList.toggle('active', open);
+    navLinks.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    body.classList.toggle('menu-open', open);
+  }
+  if (burger) {
+    burger.addEventListener('click', function () {
+      setMenu(!navLinks.classList.contains('open'));
+    });
+  }
+  if (navLinks) {
+    Array.prototype.forEach.call(navLinks.querySelectorAll('a'), function (a) {
+      a.addEventListener('click', function () { setMenu(false); });
+    });
+  }
+  doc.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setMenu(false);
+  });
+
+  /* ============ SCROLL REVEALS ============ */
+  var revealEls = doc.querySelectorAll('.reveal, .reveal-scale');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    Array.prototype.forEach.call(revealEls, function (el) { io.observe(el); });
+  } else {
+    Array.prototype.forEach.call(revealEls, function (el) { el.classList.add('in'); });
+  }
+
+  /* ============ STAT COUNTERS ============ */
+  function runCounter(el) {
+    var target = parseFloat(el.getAttribute('data-count')) || 0;
+    var dec = parseInt(el.getAttribute('data-decimals') || '0', 10);
+    var suffix = el.getAttribute('data-suffix') || '';
+    var start = null, dur = 1900;
+    function step(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      var val = target * eased;
+      el.textContent = (dec ? val.toFixed(dec) : Math.round(val)) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var counters = doc.querySelectorAll('[data-count]');
+  if ('IntersectionObserver' in window) {
+    var cio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          runCounter(en.target);
+          cio.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    Array.prototype.forEach.call(counters, function (c) { cio.observe(c); });
+  } else {
+    Array.prototype.forEach.call(counters, runCounter);
+  }
+
+  /* ============ QUOTE ROTATION ============ */
+  var quotes = [
+    { t: '\u201CI came in for one coat and left with a wardrobe that has lasted six winters. That is not something I can say about anywhere else.\u201D', a: '\u2014 Client, since 2016' },
+    { t: '\u201CThe fitting room is quiet, the light is honest, and nobody tries to sell you something you do not need.\u201D', a: '\u2014 Client, since 2019' },
+    { t: '\u201CThey altered a jacket I had owned for four years and made it feel new again. That kind of care is rare.\u201D', a: '\u2014 Client, since 2014' }
+  ];
+  var qText = doc.getElementById('quoteText');
+  var qAuthor = doc.getElementById('quoteAuthor');
+  if (qText && qAuthor) {
+    var qi = 0;
+    setInterval(function () {
+      qText.style.opacity = '0';
+      qAuthor.style.opacity = '0';
+      setTimeout(function () {
+        qi = (qi + 1) % quotes.length;
+        qText.textContent = quotes[qi].t;
+        qAuthor.textContent = quotes[qi].a;
+        qText.style.opacity = '1';
+        qAuthor.style.opacity = '1';
+      }, 650);
+    }, 7000);
+  }
+
+  /* ============ HERO + ABOUT PARALLAX ============ */
+  var heroBg = doc.getElementById('heroBg');
+  var aboutSmall = doc.getElementById('aboutSmall');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduceMotion) {
+    window.addEventListener('scroll', function () {
+      var y = window.pageYOffset;
+      if (heroBg && y < window.innerHeight * 1.2) {
+        heroBg.style.transform = 'translateY(' + (y * 0.18) + 'px)';
+      }
+      if (aboutSmall) {
+        var rect = aboutSmall.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          var offset = (rect.top - window.innerHeight / 2) * 0.06;
+          aboutSmall.style.transform = 'translateY(' + offset + 'px)';
+        }
+      }
+    }, { passive: true });
+  }
+
+  /* ============ BOOKING FORM ============ */
+  var form = doc.getElementById('bookForm');
+  var ok = doc.getElementById('formOk');
+  if (form && ok) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var name = doc.getElementById('fName');
+      var phone = doc.getElementById('fPhone');
+      var email = doc.getElementById('fEmail');
+      var date = doc.getElementById('fDate');
+      var service = doc.getElementById('fService');
+      var time = doc.getElementById('fTime');
+      var valid = true;
+
+      [name, phone, date].forEach(function (f) {
+        if (!f) return;
+        if (!f.value.trim()) {
+          f.style.borderBottomColor = '#b06b5b';
+          valid = false;
+        } else {
+          f.style.borderBottomColor = '';
+        }
+      });
+
+      if (!valid) {
+        ok.textContent = 'Please fill in your name, phone number and preferred date.';
+        ok.classList.add('show');
+        return;
+      }
+
+      var contactLine = email && email.value.trim()
+        ? ' We will also send confirmation to ' + email.value.trim() + '.'
+        : '';
+
+      ok.textContent = 'Thank you, ' + name.value.trim() + '. Your request for a ' +
+        (service ? service.value : 'styling appointment') + ' on ' + date.value +
+        ' at ' + (time ? time.value : '') +
+        ' has been noted. We will confirm by phone shortly.' + contactLine +
+        ' (Demo only \u2014 connect this form to your booking system.)';
+      ok.classList.add('show');
+      ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      form.reset();
+    });
+  }
+})();
+</script>
+</body>
+</html>

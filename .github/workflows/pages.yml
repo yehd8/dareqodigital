@@ -44,6 +44,12 @@ jobs:
             .nojekyll \
             public-site/
           cp -R barber-demo public-site/
+          cp -R fashion-demo public-site/
+          cp -R restaurant-demo public-site/
+          cp -R cafe-demo public-site/
+          cp -R business-manager-demo public-site/
+          cp -R perfume-demo public-site/
+          cp -R car-detailing-demo public-site/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:

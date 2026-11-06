@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fine Dining Restaurant — Luxury Restaurant Demo</title>
+<meta name="description" content="Luxury restaurant demo. Replace the placeholder brand name and contact details with your own business.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Outfit:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b100d;
+  --bg-2:#0e1511;
+  --surface:#121a15;
+  --ink:#f3eee2;
+  --muted:#94a096;
+  --brass:#c49a5b;
+  --brass-soft:#e2c393;
+  --line:rgba(243,238,226,.10);
+  --line-soft:rgba(243,238,226,.06);
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Outfit',system-ui,sans-serif;
+  --wrap:1240px;
+  --pad:clamp(20px,5vw,56px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:100px}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-weight:300;line-height:1.75;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body.loading,body.menu-open{overflow:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit}
+::selection{background:var(--brass);color:#0b100d}
+@media (hover:hover) and (pointer:fine){
+  body,a,button,.dish,.g-item,.tab,.btn{cursor:none}
+}
+h1,h2,h3,h4{font-family:var(--serif);font-weight:400;line-height:1.06;letter-spacing:.002em}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+.sec{padding:clamp(80px,10vw,140px) 0}
+.eyebrow{
+  font-size:10.5px;font-weight:400;letter-spacing:.42em;text-transform:uppercase;
+  color:var(--brass);display:flex;align-items:center;gap:14px;
+}
+.eyebrow-line{width:44px;height:1px;background:var(--brass);display:inline-block;flex:none;opacity:.75}
+.sec-title{font-size:clamp(38px,5.2vw,70px);margin:20px 0 24px}
+.sec-title em{font-style:italic;color:var(--brass-soft)}
+.sec-intro{max-width:540px;color:var(--muted);font-size:15px}
+.sec-head{margin-bottom:clamp(40px,6vw,72px)}
+.shimmer{
+  background:linear-gradient(100deg,#8a7a5f 0%,#e8d6b6 38%,#a8906a 56%,#e8d6b6 80%,#8a7a5f 100%);
+  background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:shimmer 9s linear infinite;
+}
+@keyframes shimmer{to{background-position:-220% 0}}
+
+/* BUTTONS */
+.btn{
+  position:relative;z-index:0;display:inline-flex;align-items:center;justify-content:center;
+  padding:17px 38px;border:1px solid rgba(196,154,91,.7);color:var(--brass-soft);
+  font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;font-weight:400;
+  overflow:hidden;transition:color .45s ease,border-color .45s ease;background:none;
+}
+.btn::before{
+  content:'';position:absolute;inset:0;z-index:-1;
+  background:linear-gradient(100deg,#a8844f,#e3c79a 48%,#b8935f);
+  transform:translateY(101%);transition:transform .55s cubic-bezier(.19,1,.22,1);
+}
+.btn:hover::before{transform:translateY(0)}
+.btn:hover{color:#0b100d;border-color:var(--brass-soft)}
+.btn-solid{background:linear-gradient(100deg,#a8844f,#e3c79a 48%,#b8935f);color:#0b100d;border-color:transparent}
+.btn-solid::before{background:#fff}
+.btn-solid:hover{color:#0b100d}
+.btn-ghost{border-color:rgba(243,238,226,.2);color:var(--ink)}
+.btn-small{padding:13px 26px;font-size:9.5px;letter-spacing:.26em}
+
+/* LOADER */
+.loader{
+  position:fixed;inset:0;z-index:10000;background:var(--bg);
+  display:grid;place-items:center;transition:opacity .9s ease,visibility .9s;
+}
+.loader.done{opacity:0;visibility:hidden;pointer-events:none}
+.loader-inner{text-align:center}
+.loader-mark{font-size:18px;color:var(--brass);animation:pulse 1.7s ease-in-out infinite}
+.loader-name{
+  font-family:var(--serif);font-size:14px;letter-spacing:.52em;text-transform:uppercase;
+  margin-top:20px;color:var(--ink);padding-left:.52em;
+}
+.loader-bar{width:200px;height:1px;background:rgba(243,238,226,.13);margin:28px auto 0;overflow:hidden}
+.loader-bar span{
+  display:block;height:100%;width:100%;
+  background:linear-gradient(90deg,#6b573a,#e3c79a,#6b573a);
+  transform:translateX(-101%);animation:loadbar 1.6s cubic-bezier(.65,0,.35,1) forwards;
+}
+@keyframes loadbar{to{transform:translateX(0)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* PROGRESS */
+.progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:950;pointer-events:none}
+.progress span{
+  display:block;height:100%;width:0;
+  background:linear-gradient(90deg,#6b573a,#e3c79a,#9d8054);
+  transition:width .1s linear;
+}
+
+/* CURSOR + GRAIN */
+.cursor{
+  position:fixed;top:0;left:0;width:36px;height:36px;border:1px solid rgba(226,195,147,.5);
+  border-radius:50%;pointer-events:none;z-index:9998;display:none;
+  transition:width .35s ease,height .35s ease,background .35s ease,border-color .35s ease;
+  will-change:transform;
+}
+.cursor.grow{width:70px;height:70px;background:rgba(196,154,91,.10);border-color:rgba(226,195,147,.95)}
+.cursor-dot{
+  position:fixed;top:0;left:0;width:4px;height:4px;border-radius:50%;
+  background:var(--brass-soft);pointer-events:none;z-index:9999;will-change:transform;display:none;
+}
+@media (hover:hover) and (pointer:fine){
+  .cursor,.cursor-dot{display:block}
+}
+.grain{
+  position:fixed;inset:0;z-index:9997;pointer-events:none;opacity:.045;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* NAV */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  border-bottom:1px solid transparent;
+  transition:transform .55s cubic-bezier(.19,1,.22,1),background .45s ease,
+             border-color .45s ease,backdrop-filter .45s;
+}
+.nav.scrolled{background:rgba(11,16,13,.82);backdrop-filter:blur(18px);border-bottom-color:var(--line)}
+.nav.hide{transform:translateY(-101%)}
+.nav-inner{
+  max-width:var(--wrap);margin:0 auto;padding:22px var(--pad);
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+}
+.brand{
+  font-family:var(--serif);font-size:16px;letter-spacing:.36em;text-transform:uppercase;
+  display:flex;align-items:center;gap:12px;white-space:nowrap;
+}
+.brand i{font-style:normal;color:var(--brass);font-size:9px}
+.nav-links{display:flex;align-items:center;gap:38px}
+.nav-links a{
+  font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;
+  color:rgba(243,238,226,.7);position:relative;padding:6px 0;transition:color .3s;
+}
+.nav-links a::after{
+  content:'';position:absolute;left:0;bottom:0;width:100%;height:1px;
+  background:var(--brass);transform:scaleX(0);transform-origin:right;
+  transition:transform .5s cubic-bezier(.19,1,.22,1);
+}
+.nav-links a:hover{color:var(--ink)}
+.nav-links a:hover::after{transform:scaleX(1);transform-origin:left}
+.nav-book{flex:none}
+.burger{
+  display:none;width:44px;height:44px;background:none;border:0;
+  flex-direction:column;justify-content:center;align-items:center;gap:7px;z-index:901;
+}
+.burger span{display:block;width:26px;height:1px;background:var(--ink);transition:transform .4s,opacity .3s}
+.burger.active span:first-child{transform:translateY(4px) rotate(45deg)}
+.burger.active span:last-child{transform:translateY(-4px) rotate(-45deg)}
+
+/* HERO */
+.hero{
+  position:relative;min-height:100vh;min-height:100svh;display:flex;align-items:center;
+  overflow:hidden;padding:165px 0 140px;
+}
+.hero-bg{position:absolute;inset:-8% 0;will-change:transform}
+.hero-bg img{
+  width:100%;height:100%;object-fit:cover;
+  filter:saturate(.88) contrast(1.05) brightness(.86);
+  animation:kenburns 32s ease-in-out infinite alternate;
+}
+@keyframes kenburns{from{transform:scale(1.02)}to{transform:scale(1.15)}}
+.hero-shade{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,rgba(8,12,10,.94) 0%,rgba(8,12,10,.76) 34%,rgba(8,12,10,.24) 68%,rgba(8,12,10,.58) 100%),
+    linear-gradient(0deg,var(--bg) 1%,rgba(8,12,10,0) 44%);
+}
+.hero-content{position:relative;z-index:2;width:100%;max-width:var(--wrap);margin:0 auto;padding:0 var(--pad)}
+.hero-title{
+  font-size:clamp(50px,9.6vw,136px);line-height:.93;letter-spacing:-.008em;
+  margin:26px 0 30px;
+}
+.hero-title em{font-style:italic;color:var(--brass-soft)}
+.hero-title .line{display:block;overflow:hidden;padding-bottom:.1em;margin-bottom:-.1em}
+.hero-title .line>span{display:block;transform:translateY(116%);transition:transform 1.3s cubic-bezier(.19,1,.22,1)}
+body.loaded .hero-title .line:nth-child(1)>span{transform:none;transition-delay:.2s}
+body.loaded .hero-title .line:nth-child(2)>span{transform:none;transition-delay:.36s}
+.hero-sub{max-width:480px;color:rgba(243,238,226,.74);font-size:15.5px;margin-bottom:40px}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap}
+.hero .eyebrow,.hero-sub,.hero-actions{
+  opacity:0;transform:translateY(26px);
+  transition:opacity 1s ease,transform 1.1s cubic-bezier(.19,1,.22,1);
+}
+body.loaded .hero .eyebrow{opacity:1;transform:none;transition-delay:.35s}
+body.loaded .hero-sub{opacity:1;transform:none;transition-delay:.95s}
+body.loaded .hero-actions{opacity:1;transform:none;transition-delay:1.1s}
+
+.hero-meta{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  border-top:1px solid rgba(243,238,226,.14);
+  background:linear-gradient(0deg,rgba(8,12,10,.6),rgba(8,12,10,0));
+  opacity:0;transform:translateY(20px);
+  transition:opacity 1.1s ease,transform 1.2s cubic-bezier(.19,1,.22,1);
+}
+body.loaded .hero-meta{opacity:1;transform:none;transition-delay:1.25s}
+.hero-meta .wrap{display:flex;gap:44px;flex-wrap:wrap;padding-top:22px;padding-bottom:22px}
+.hero-meta div{
+  display:flex;align-items:center;gap:12px;font-size:10px;letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(243,238,226,.66);
+}
+.hero-meta i{font-style:normal;color:var(--brass-soft);font-size:8px}
+
+.hero-side{
+  position:absolute;right:26px;top:50%;z-index:2;
+  writing-mode:vertical-rl;transform:translateY(-50%) rotate(180deg);
+  font-size:9.5px;letter-spacing:.44em;text-transform:uppercase;
+  color:rgba(243,238,226,.42);opacity:0;transition:opacity 1.4s ease 1.4s;
+}
+body.loaded .hero-side{opacity:1}
+.hero-side b{color:var(--brass-soft);font-weight:400}
+
+.scroll-cue{
+  position:absolute;left:50%;bottom:124px;width:1px;height:64px;z-index:2;
+  background:rgba(243,238,226,.18);transform:translate(-50%,26px);opacity:0;
+  transition:opacity 1s ease,transform 1.1s cubic-bezier(.19,1,.22,1);
+}
+body.loaded .scroll-cue{opacity:1;transform:translate(-50%,0);transition-delay:1.3s}
+.scroll-cue span{
+  position:absolute;top:-18px;left:-1px;width:3px;height:18px;
+  background:linear-gradient(180deg,var(--brass-soft),transparent);
+  animation:drop 2.1s cubic-bezier(.65,0,.35,1) infinite;
+}
+@keyframes drop{
+  0%{transform:translateY(0);opacity:0}
+  25%{opacity:1}
+  100%{transform:translateY(82px);opacity:0}
+}
+
+/* MARQUEE */
+.marquee{background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0;overflow:hidden}
+.marquee-track{display:flex;width:max-content;animation:marq 42s linear infinite}
+.marquee-half{display:flex;align-items:center;gap:46px;padding-right:46px}
+.marquee-half span{
+  font-family:var(--serif);font-size:14px;letter-spacing:.36em;text-transform:uppercase;
+  color:rgba(243,238,226,.5);white-space:nowrap;
+}
+.marquee-half i{font-style:normal;color:var(--brass);font-size:8px}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* REVEALS */
+.reveal{
+  opacity:0;transform:translateY(34px);
+  transition:opacity 1s cubic-bezier(.19,1,.22,1),transform 1s cubic-bezier(.19,1,.22,1);
+  transition-delay:var(--d,0s);
+}
+.reveal.in{opacity:1;transform:none}
+.reveal-scale{
+  opacity:0;transform:scale(.955);
+  transition:opacity 1.2s ease,transform 1.3s cubic-bezier(.19,1,.22,1);
+  transition-delay:var(--d,0s);
+}
+.reveal-scale.in{opacity:1;transform:none}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1.02fr 1fr;gap:clamp(44px,7vw,110px);align-items:center}
+.about-media{position:relative}
+.about-img{overflow:hidden;background:#101713}
+.about-img img{width:100%;height:100%;object-fit:cover;transition:transform 1.7s cubic-bezier(.19,1,.22,1)}
+.about-img.main{aspect-ratio:4/5}
+.about-media:hover .about-img.main img{transform:scale(1.05)}
+.about-img.small{
+  position:absolute;right:-9%;bottom:-9%;width:46%;aspect-ratio:1;
+  border:9px solid var(--bg);will-change:transform;
+}
+.about-badge{
+  position:absolute;left:-22px;top:34px;
+  background:linear-gradient(140deg,#e3c79a,#a8844f);color:#0b100d;
+  padding:15px 20px;display:flex;flex-direction:column;align-items:center;line-height:1;
+  box-shadow:0 24px 60px -24px rgba(0,0,0,.85);
+}
+.about-badge span{font-size:8.5px;letter-spacing:.26em;text-transform:uppercase;opacity:.8}
+.about-badge b{font-family:var(--serif);font-size:26px;font-weight:500;margin-top:8px}
+.about-copy p{color:rgba(243,238,226,.74);font-size:15px;margin-bottom:18px}
+.about-list{list-style:none;margin:36px 0 40px;border-top:1px solid var(--line)}
+.about-list li{
+  display:flex;gap:22px;align-items:baseline;padding:17px 0;
+  border-bottom:1px solid var(--line);font-size:14px;color:rgba(243,238,226,.82);
+}
+.about-list li span{font-family:var(--serif);font-size:12px;letter-spacing:.16em;color:var(--brass);flex:none}
+
+/* MENU */
+.menu-shell{position:relative}
+.tabs{
+  display:flex;gap:6px;flex-wrap:wrap;border-bottom:1px solid var(--line);
+  margin-bottom:clamp(36px,5vw,56px);
+}
+.tab{
+  position:relative;background:none;border:0;padding:16px 30px;
+  font-family:var(--sans);font-size:10.5px;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--muted);transition:color .35s ease;
+}
+.tab::after{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:var(--brass);transform:scaleX(0);transform-origin:center;
+  transition:transform .5s cubic-bezier(.19,1,.22,1);
+}
+.tab:hover{color:rgba(243,238,226,.85)}
+.tab.active{color:var(--brass-soft)}
+.tab.active::after{transform:scaleX(1)}
+
+.menu-panel{display:none;grid-template-columns:1fr 1fr;gap:0 clamp(44px,6vw,90px)}
+.menu-panel.active{display:grid;animation:panelIn .8s cubic-bezier(.19,1,.22,1) both}
+@keyframes panelIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+.dish{
+  position:relative;padding:24px 14px;border-bottom:1px solid var(--line);
+  transition:background .45s ease,padding-left .5s cubic-bezier(.19,1,.22,1);
+}
+.dish::before{
+  content:'';position:absolute;inset:0;opacity:0;transition:opacity .45s ease;
+  background:linear-gradient(90deg,rgba(196,154,91,.09),transparent 72%);
+}
+.dish:hover::before{opacity:1}
+.dish:hover{padding-left:26px}
+.dish-head{display:flex;align-items:baseline;gap:18px;margin-bottom:7px}
+.dish-head h3{
+  font-size:clamp(20px,2.1vw,26px);line-height:1.2;transition:color .4s ease;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.dish:hover .dish-head h3{color:var(--brass-soft)}
+.dish-lead{flex:1;height:1px;background:repeating-linear-gradient(90deg,var(--line) 0 3px,transparent 3px 7px);min-width:16px}
+.dish-price{font-family:var(--serif);font-size:19px;color:rgba(243,238,226,.88);white-space:nowrap}
+.dish p{font-size:13.5px;color:var(--muted);line-height:1.6;max-width:44ch}
+.dish-tag{
+  display:inline-block;margin-left:10px;font-size:8.5px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--brass);border:1px solid rgba(196,154,91,.45);
+  padding:3px 8px;vertical-align:middle;
+}
+
+/* SIGNATURES */
+.sig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.sig{
+  position:relative;overflow:hidden;display:block;aspect-ratio:3/4;background:#101713;
+}
+.sig img{
+  width:100%;height:100%;object-fit:cover;
+  filter:saturate(.92) brightness(.94);
+  transition:transform 1.5s cubic-bezier(.19,1,.22,1),filter .9s ease;
+}
+.sig:hover img{transform:scale(1.07);filter:saturate(1.02) brightness(1)}
+.sig::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(0deg,rgba(8,12,10,.8) 0%,rgba(8,12,10,.12) 48%,rgba(8,12,10,0) 100%);
+}
+.sig-body{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;padding:30px;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+}
+.sig-body h3{font-size:clamp(22px,2.4vw,30px);line-height:1.12}
+.sig-body small{
+  display:block;font-family:var(--sans);font-size:9.5px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--brass-soft);margin-top:9px;
+}
+.sig-num{
+  font-family:var(--serif);font-size:13px;color:rgba(243,238,226,.7);
+  border:1px solid rgba(243,238,226,.28);width:38px;height:38px;border-radius:50%;
+  display:grid;place-items:center;flex:none;
+  transition:background .4s ease,color .4s ease,border-color .4s ease;
+}
+.sig:hover .sig-num{background:var(--brass-soft);color:#0b100d;border-color:var(--brass-soft)}
+
+/* GALLERY */
+.gal-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:210px;gap:14px}
+.g-item{position:relative;overflow:hidden;background:#101713}
+.g-item img{
+  width:100%;height:100%;object-fit:cover;
+  filter:saturate(.9) contrast(1.03) brightness(.95);
+  transition:transform 1.4s cubic-bezier(.19,1,.22,1),filter .9s ease;
+}
+.g-item:hover img{transform:scale(1.07);filter:saturate(1.02) contrast(1.04) brightness(1)}
+.g-item figcaption{
+  position:absolute;inset:auto 0 0 0;padding:24px;display:flex;align-items:center;gap:14px;
+  font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink);
+  background:linear-gradient(0deg,rgba(0,0,0,.8),rgba(0,0,0,0));
+  opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s;
+}
+.g-item:hover figcaption{opacity:1;transform:none}
+.g-item figcaption span{color:var(--brass-soft)}
+.g-a{grid-column:span 2;grid-row:span 2}
+.g-b{grid-column:span 2}
+
+/* STATS */
+.stats{
+  background:var(--bg-2);border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:clamp(56px,8vw,96px) 0;
+}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;text-align:center}
+.stat{padding:0 10px}
+.stat + .stat{box-shadow:inset 1px 0 0 var(--line)}
+.stat b{
+  display:block;font-family:var(--serif);font-weight:400;
+  font-size:clamp(38px,5vw,64px);line-height:1;color:var(--ink);
+}
+.stat span{
+  display:block;margin-top:16px;font-size:10px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--muted);
+}
+
+/* QUOTE */
+.quote-sec{text-align:center;padding:clamp(90px,13vw,170px) 0}
+.quote-mark{font-family:var(--serif);font-size:96px;line-height:.55;color:var(--brass);opacity:.45}
+blockquote{
+  font-family:var(--serif);font-style:italic;font-size:clamp(22px,3.3vw,42px);
+  line-height:1.38;max-width:920px;margin:26px auto 32px;color:var(--ink);
+}
+#quoteText,#quoteAuthor{transition:opacity .65s ease}
+.quote-author{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--brass)}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1.12fr;gap:clamp(44px,7vw,110px);align-items:start}
+.info-list{list-style:none;margin-top:44px;border-top:1px solid var(--line)}
+.info-list li{
+  display:flex;justify-content:space-between;align-items:center;gap:24px;
+  padding:19px 0;border-bottom:1px solid var(--line);
+}
+.info-label{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.info-line{width:56%;height:1px;background:rgba(243,238,226,.16)}
+.info-note{margin-top:28px;font-size:12.5px;font-style:italic;color:var(--muted);max-width:360px}
+.book-form{display:grid;grid-template-columns:1fr 1fr;gap:28px 24px;align-content:start}
+.field{display:flex;flex-direction:column;gap:9px}
+.field.full{grid-column:1/-1}
+.field label{font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted)}
+.field input,.field select,.field textarea{
+  width:100%;background:transparent;border:0;border-bottom:1px solid rgba(243,238,226,.18);
+  border-radius:0;color:var(--ink);font-family:var(--sans);font-weight:300;font-size:15px;
+  padding:10px 2px;outline:none;transition:border-color .35s ease;
+  -webkit-appearance:none;appearance:none;
+}
+.field input:focus,.field select:focus,.field textarea:focus{border-bottom-color:var(--brass-soft)}
+.field input::placeholder,.field textarea::placeholder{color:rgba(243,238,226,.28)}
+.field select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c49a5b' fill='none' stroke-width='1'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 4px center;padding-right:26px;
+}
+.field select option{background:#121a15;color:var(--ink)}
+input[type="date"]{color-scheme:dark}
+.form-ok{
+  display:none;grid-column:1/-1;padding:16px 20px;font-size:13.5px;
+  border:1px solid rgba(196,154,91,.5);background:rgba(196,154,91,.07);color:var(--brass-soft);
+}
+.form-ok.show{display:block;animation:fadeUp .6s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* FOOTER */
+.footer{background:var(--bg-2);border-top:1px solid var(--line);padding:clamp(60px,8vw,100px) 0 30px}
+.footer-top{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;
+  padding-bottom:48px;border-bottom:1px solid var(--line);
+}
+.footer-brand{
+  font-family:var(--serif);font-size:clamp(26px,4vw,44px);letter-spacing:.22em;
+  text-transform:uppercase;display:flex;align-items:center;gap:16px;
+}
+.footer-brand i{font-style:normal;color:var(--brass);font-size:.42em}
+.footer-tag{font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+.footer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:36px;padding:48px 0}
+.footer-grid h4{
+  font-family:var(--sans);font-weight:400;font-size:9.5px;letter-spacing:.3em;
+  text-transform:uppercase;color:var(--brass);margin-bottom:22px;
+}
+.footer-grid a{
+  display:block;font-size:13.5px;color:rgba(243,238,226,.56);
+  margin-bottom:11px;transition:color .3s;
+}
+.footer-grid a:hover{color:var(--brass-soft)}
+.blank{height:1px;width:100%;max-width:180px;background:rgba(243,238,226,.16);margin-bottom:18px}
+.blank.short{max-width:105px}
+.footer-bottom{
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding-top:28px;border-top:1px solid var(--line);
+  font-size:10.5px;letter-spacing:.16em;color:rgba(243,238,226,.34);
+}
+
+/* RESPONSIVE */
+@media (max-width:1080px){.nav-links{gap:26px}}
+@media (max-width:960px){
+  .about-grid,.contact-grid{grid-template-columns:1fr}
+  .about-media{max-width:520px}
+  .footer-grid{grid-template-columns:repeat(2,1fr)}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:44px 20px}
+  .stat + .stat{box-shadow:none}
+  .menu-panel{grid-template-columns:1fr;gap:0}
+  .sig-grid{grid-template-columns:1fr 1fr;gap:18px}
+  .sig{aspect-ratio:4/5}
+}
+@media (max-width:900px){
+  .burger{display:flex}
+  .nav-book{display:none}
+  .nav-links{
+    position:fixed;inset:0;z-index:850;background:var(--bg);
+    flex-direction:column;justify-content:center;align-items:center;gap:36px;
+    opacity:0;visibility:hidden;transition:opacity .45s ease,visibility .45s;
+  }
+  .nav-links.open{opacity:1;visibility:visible}
+  .nav-links a{font-size:14px;letter-spacing:.32em;color:rgba(243,238,226,.85)}
+  .nav-links a::after{display:none}
+  .hero-side{display:none}
+  .scroll-cue{display:none}
+  .hero-meta .wrap{gap:22px;padding-top:18px;padding-bottom:18px}
+  .gal-grid{grid-auto-rows:180px}
+  .g-a{grid-column:span 2;grid-row:span 1}
+  .g-b{grid-column:span 2}
+  .tab{padding:14px 20px;font-size:9.5px;letter-spacing:.24em}
+}
+@media (max-width:640px){
+  .hero{padding-top:132px}
+  .hero-actions .btn{width:100%}
+  .sig-grid{grid-template-columns:1fr}
+  .sig{aspect-ratio:16/11}
+  .gal-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:155px}
+  .g-a{grid-column:span 2}
+  .g-b{grid-column:span 2}
+  .book-form{grid-template-columns:1fr}
+  .about-img.small{width:52%;right:-4%;bottom:-8%}
+  .about-badge{left:-8px;padding:12px 15px}
+  .footer-grid{grid-template-columns:1fr;gap:28px}
+  .stats-grid{gap:36px 12px}
+  .dish{padding:20px 6px}
+  .dish:hover{padding-left:12px}
+  .dish-head h3{white-space:normal;font-size:21px}
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+  }
+  .reveal,.reveal-scale{opacity:1;transform:none}
+  .hero-title .line>span{transform:none}
+  .hero .eyebrow,.hero-sub,.hero-actions,.hero-meta,.scroll-cue,.hero-side{opacity:1;transform:none}
+  .scroll-cue{transform:translate(-50%,0)}
+  .menu-panel.active{animation:none}
+}
+</style>
+</head>
+<body class="loading">
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <div class="loader-mark">&#9670;</div>
+    <div class="loader-name">Your Brand</div>
+    <div class="loader-bar"><span></span></div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+
+<!-- CURSOR / GRAIN -->
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+<div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- NAV -->
+<header class="nav" id="nav">
+  <div class="nav-inner">
+    <!-- REPLACE: your business name -->
+    <a href="#top" class="brand"><i>&#9670;</i>Your Brand</a>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="#about">The House</a>
+      <a href="#menu">Menu</a>
+      <a href="#signatures">Signatures</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#contact">Reserve</a>
+    </nav>
+
+    <a href="#contact" class="btn btn-small btn-ghost nav-book">Reserve a Table</a>
+
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<main>
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="hero-bg" id="heroBg">
+    <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1920&q=80" alt="Fine dining room at dusk">
+  </div>
+  <div class="hero-shade"></div>
+
+  <div class="hero-content">
+    <p class="eyebrow"><span class="eyebrow-line"></span>Seasonal Kitchen &amp; Cellar</p>
+    <h1 class="hero-title">
+      <span class="line"><span>An Evening,</span></span>
+      <span class="line"><span><em>Considered.</em></span></span>
+    </h1>
+    <p class="hero-sub">A small dining room, a short menu, and a kitchen that changes with the market. We cook one thing at a time — properly — and serve it at the pace it deserves.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn btn-solid">Reserve a Table</a>
+      <a href="#menu" class="btn btn-ghost">View the Menu</a>
+    </div>
+  </div>
+
+  <div class="hero-side">Scroll to discover <b>— 01</b></div>
+  <a href="#about" class="scroll-cue" aria-label="Scroll down"><span></span></a>
+
+  <div class="hero-meta">
+    <div class="wrap">
+      <div><i>&#9670;</i>Seasonal Menu</div>
+      <div><i>&#9670;</i>Natural Wine</div>
+      <div><i>&#9670;</i>34 Covers</div>
+      <div><i>&#9670;</i>Open Dinner</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <div class="marquee-half">
+      <span>Seasonal Kitchen</span><i>&#9670;</i><span>Natural Wine</span><i>&#9670;</i><span>Hand-Rolled Pasta</span><i>&#9670;</i><span>Wood Fire</span><i>&#9670;</i><span>Open Cellar</span><i>&#9670;</i>
+    </div>
+    <div class="marquee-half">
+      <span>Seasonal Kitchen</span><i>&#9670;</i><span>Natural Wine</span><i>&#9670;</i><span>Hand-Rolled Pasta</span><i>&#9670;</i><span>Wood Fire</span><i>&#9670;</i><span>Open Cellar</span><i>&#9670;</i>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="sec" id="about">
+  <div class="wrap about-grid">
+    <div class="about-media reveal-scale">
+      <div class="about-img main">
+        <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=900&q=80" alt="Restaurant interior" loading="lazy">
+      </div>
+      <div class="about-img small" id="aboutSmall">
+        <img src="https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=600&q=80" alt="Chef plating a dish" loading="lazy">
+      </div>
+      <div class="about-badge"><span>Est.</span><b>2011</b></div>
+    </div>
+
+    <div class="about-copy">
+      <p class="eyebrow reveal"><span class="eyebrow-line"></span>The House</p>
+      <h2 class="sec-title reveal" style="--d:.08s">A short menu,<br>a long evening,<br><em class="shimmer">a quiet kitchen.</em></h2>
+      <p class="reveal" style="--d:.16s">We seat thirty-four guests a night and write the menu each morning around what arrives from the growers and fishermen we have worked with for years.</p>
+      <p class="reveal" style="--d:.22s">There is no à la carte rush here. Courses arrive when they are ready, the bread is baked twice a day, and the cellar is open for you to walk through with us before you choose.</p>
+      <ul class="about-list reveal" style="--d:.28s">
+        <li><span>01</span>Daily-changing menu built on the morning market</li>
+        <li><span>02</span>Hand-rolled pasta and bread baked in-house</li>
+        <li><span>03</span>Over 180 small-grower wines in the cellar</li>
+      </ul>
+      <a href="#contact" class="btn reveal" style="--d:.34s">Reserve a Table</a>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="sec" id="menu" style="background:var(--bg-2)">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="eyebrow reveal"><span class="eyebrow-line"></span>The Menu</p>
+      <h2 class="sec-title reveal" style="--d:.08s">Tonight's Table</h2>
+      <p class="sec-intro reveal" style="--d:.14s">The menu changes with the season and the market. Choose a course to see what we are serving this week.</p>
+    </header>
+
+    <div class="menu-shell reveal" style="--d:.2s">
+      <div class="tabs" role="tablist">
+        <button class="tab active" role="tab" aria-selected="true" data-tab="starters">To Begin</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="mains">Mains</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="desserts">Desserts</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="cellar">Cellar</button>
+      </div>
+
+      <div class="menu-panel active" data-panel="starters" role="tabpanel">
+        <div class="dish">
+          <div class="dish-head"><h3>Oysters, Mignonette</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Half a dozen, shucked to order, with shallot vinegar and rye.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Beef Carpaccio</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Hand-cut, aged parmesan, rocket and cold-pressed olive oil.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Burrata &amp; Heirloom Tomato</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Creamy burrata, basil oil, aged balsamic and sourdough crumb.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Hand-Rolled Tortellini</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Ricotta and lemon, brown butter, sage and toasted pine nuts.<span class="dish-tag">House</span></p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Wood-Fired Octopus</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Charred over oak, smoked potato, paprika and lemon aioli.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Seasonal Soup</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Whatever the garden gives us this week, finished with cold cream.</p>
+        </div>
+      </div>
+
+      <div class="menu-panel" data-panel="mains" role="tabpanel">
+        <div class="dish">
+          <div class="dish-head"><h3>Dry-Aged Ribeye</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Forty days aged, bone marrow butter, watercress and confit shallot.<span class="dish-tag">Signature</span></p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Line-Caught Sea Bass</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Crisp skin, fennel, brown shrimp and a beurre blanc.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Wood-Fired Lamb</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Slow-roasted shoulder, smoked aubergine, mint and jus.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Cacio e Pepe</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>House tonnarelli, aged pecorino and cracked black pepper.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Wild Mushroom Risotto</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Acquerello rice, porcini, thyme and aged parmesan.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Market Vegetables</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Roasted over embers with a green herb salsa and smoked salt.</p>
+        </div>
+      </div>
+
+      <div class="menu-panel" data-panel="desserts" role="tabpanel">
+        <div class="dish">
+          <div class="dish-head"><h3>Dark Chocolate Tart</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Seventy percent chocolate, sea salt, crème fraîche.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Burnt Basque Cheesecake</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Caramelised top, soft centre, roasted rhubarb.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Vanilla Panna Cotta</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Madagascar vanilla, poached pear and a shortbread shard.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Affogato al Caffè</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>House gelato, double espresso, amaretti crumb.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Cheese Board</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Three farmhouse cheeses, quince, walnut and raw honey.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Seasonal Sorbet</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Two scoops of whatever is ripest this week.</p>
+        </div>
+      </div>
+
+      <div class="menu-panel" data-panel="cellar" role="tabpanel">
+        <div class="dish">
+          <div class="dish-head"><h3>Champagne, Grower</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Small-house, low dosage, by the glass or the bottle.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>White Burgundy</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Chardonnay from old vines, flint and orchard fruit.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Barolo</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Nebbiolo, aged in large oak, poured by the glass.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Natural &amp; Skin Contact</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>A rotating list from small growers — ask your server.</p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>House Pairing</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Four glasses chosen to follow the menu.<span class="dish-tag">Recommended</span></p>
+        </div>
+        <div class="dish">
+          <div class="dish-head"><h3>Zero-Alcohol Pairing</h3><span class="dish-lead"></span><span class="dish-price">&mdash;</span></div>
+          <p>Fermented, steeped and pressed in-house.</p>
+        </div>
+      </div>
+
+      <p style="margin-top:34px;font-size:12.5px;font-style:italic;color:var(--muted)">
+        Prices and final dishes are confirmed on the evening's printed menu. Dietary requirements happily accommodated with notice.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNATURES -->
+<section class="sec" id="signatures">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="eyebrow reveal"><span class="eyebrow-line"></span>Signatures</p>
+      <h2 class="sec-title reveal" style="--d:.08s">Three Dishes</h2>
+      <p class="sec-intro reveal" style="--d:.14s">The plates our regulars order before they have even sat down.</p>
+    </header>
+
+    <div class="sig-grid">
+      <a href="#contact" class="sig reveal">
+        <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" alt="Dry-aged ribeye" loading="lazy">
+        <div class="sig-body">
+          <div><h3>Dry-Aged Ribeye</h3><small>Forty Days</small></div>
+          <span class="sig-num">01</span>
+        </div>
+      </a>
+      <a href="#contact" class="sig reveal" style="--d:.1s">
+        <img src="https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=800&q=80" alt="Hand-rolled pasta" loading="lazy">
+        <div class="sig-body">
+          <div><h3>Hand-Rolled Pasta</h3><small>Made Daily</small></div>
+          <span class="sig-num">02</span>
+        </div>
+      </a>
+      <a href="#contact" class="sig reveal" style="--d:.2s">
+        <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=800&q=80" alt="Dark chocolate tart" loading="lazy">
+        <div class="sig-body">
+          <div><h3>Chocolate Tart</h3><small>Sea Salt</small></div>
+          <span class="sig-num">03</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="sec" id="gallery" style="background:var(--bg-2)">
+  <div class="wrap">
+    <header class="sec-head">
+      <p class="eyebrow reveal"><span class="eyebrow-line"></span>The Room</p>
+      <h2 class="sec-title reveal" style="--d:.08s">Evenings Here</h2>
+      <p class="sec-intro reveal" style="--d:.14s">Low light, warm wood and a room that fills quietly around seven.</p>
+    </header>
+
+    <div class="gal-grid">
+      <figure class="g-item g-a reveal-scale">
+        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1100&q=80" alt="Dining room" loading="lazy">
+        <figcaption><span>01</span>The Dining Room</figcaption>
+      </figure>
+      <figure class="g-item reveal-scale" style="--d:.06s">
+        <img src="https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?auto=format&fit=crop&w=800&q=80" alt="Plated dish" loading="lazy">
+        <figcaption><span>02</span>Plating</figcaption>
+      </figure>
+      <figure class="g-item reveal-scale" style="--d:.12s">
+        <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=800&q=80" alt="Chef at pass" loading="lazy">
+        <figcaption><span>03</span>The Pass</figcaption>
+      </figure>
+      <figure class="g-item reveal-scale" style="--d:.18s">
+        <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=800&q=80" alt="Wine being poured" loading="lazy">
+        <figcaption><span>04</span>The Cellar</figcaption>
+      </figure>
+      <figure class="g-item g-b reveal-scale" style="--d:.24s">
+        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1100&q=80" alt="Table setting" loading="lazy">
+        <figcaption><span>05</span>Set for Service</figcaption>
+      </figure>
+      <figure class="g-item reveal-scale" style="--d:.3s">
+        <img src="https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=800&q=80" alt="Coffee and dessert" loading="lazy">
+        <figcaption><span>06</span>To Finish</figcaption>
+      </figure>
+      <figure class="g-item reveal-scale" style="--d:.36s">
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" alt="Main course" loading="lazy">
+        <figcaption><span>07</span>The Main</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats">
+  <div class="wrap stats-grid">
+    <div class="stat reveal"><b data-count="14">0</b><span>Years of service</span></div>
+    <div class="stat reveal" style="--d:.08s"><b data-count="34">0</b><span>Seats each night</span></div>
+    <div class="stat reveal" style="--d:.16s"><b data-count="180" data-suffix="+">0</b><span>Wines in the cellar</span></div>
+    <div class="stat reveal" style="--d:.24s"><b data-count="4.9" data-decimals="1">0</b><span>Guest rating</span></div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="quote-sec">
+  <div class="wrap">
+    <div class="quote-mark reveal">&ldquo;</div>
+    <blockquote id="quoteText">We came for an anniversary and have been back eleven times since. The room feels like it has always been there.</blockquote>
+    <p class="quote-author" id="quoteAuthor">&mdash; Guest, since 2017</p>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="sec" id="contact">
+  <div class="wrap contact-grid">
+    <div class="contact-info">
+      <p class="eyebrow reveal"><span class="eyebrow-line"></span>Reservations</p>
+      <h2 class="sec-title reveal" style="--d:.08s">Reserve<br><em class="shimmer">your table.</em></h2>
+      <p class="sec-intro reveal" style="--d:.14s">Tables are held for fifteen minutes. For parties of six or more, please call us directly so we can plan the menu with you.</p>
+
+      <!-- REPLACE: contact details intentionally left blank -->
+      <ul class="info-list reveal" style="--d:.2s">
+        <li><span class="info-label">Address</span><span class="info-line"></span></li>
+        <li><span class="info-label">Phone</span><span class="info-line"></span></li>
+        <li><span class="info-label">Email</span><span class="info-line"></span></li>
+        <li><span class="info-label">Hours</span><span class="info-line"></span></li>
+      </ul>
+      <p class="info-note reveal" style="--d:.26s">These lines are intentionally blank — add your restaurant address, phone number, email and service hours here.</p>
+    </div>
+
+    <form class="book-form reveal" id="bookForm" novalidate>
+      <div class="field">
+        <label for="fName">Full name</label>
+        <input id="fName" name="name" type="text" placeholder="Your name" required>
+      </div>
+      <div class="field">
+        <label for="fPhone">Phone</label>
+        <input id="fPhone" name="phone" type="tel" placeholder="Your number" required>
+      </div>
+      <div class="field">
+        <label for="fGuests">Guests</label>
+        <select id="fGuests" name="guests">
+          <option>1 guest</option>
+          <option selected>2 guests</option>
+          <option>3 guests</option>
+          <option>4 guests</option>
+          <option>5 guests</option>
+          <option>6 guests</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fService">Service</label>
+        <select id="fService" name="service">
+          <option>Dinner</option>
+          <option>Lunch</option>
+          <option>Chef's Tasting Menu</option>
+          <option>Wine Pairing Dinner</option>
+          <option>Private Dining</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="fDate">Preferred date</label>
+        <input id="fDate" name="date" type="date" required>
+      </div>
+      <div class="field">
+        <label for="fTime">Preferred time</label>
+        <select id="fTime" name="time">
+          <option>18:00</option><option>18:30</option><option>19:00</option>
+          <option>19:30</option><option>20:00</option><option>20:30</option><option>21:00</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label for="fNotes">Occasion or dietary notes (optional)</label>
+        <input id="fNotes" name="notes" type="text" placeholder="Anniversary, allergies, anything we should know">
+      </div>
+      <div class="field full">
+        <button type="submit" class="btn btn-solid" style="width:100%">Request Reservation</button>
+      </div>
+      <div class="form-ok" id="formOk" role="status"></div>
+    </form>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap footer-top">
+    <!-- REPLACE: your business name -->
+    <div class="footer-brand"><i>&#9670;</i>Your Brand</div>
+    <p class="footer-tag">Seasonal Kitchen &amp; Cellar</p>
+  </div>
+
+  <div class="wrap footer-grid">
+    <div>
+      <h4>Address</h4>
+      <p class="blank"></p>
+      <p class="blank short"></p>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <p class="blank"></p>
+      <p class="blank short"></p>
+    </div>
+    <div>
+      <h4>Hours</h4>
+      <p class="blank"></p>
+      <p class="blank short"></p>
+    </div>
+    <div>
+      <h4>Follow</h4>
+      <a href="#">Instagram</a>
+      <a href="#">Facebook</a>
+      <a href="#">Newsletter</a>
+    </div>
+  </div>
+
+  <div class="wrap footer-bottom">
+    <span>&copy; 2026 — All rights reserved.</span>
+    <span>Demo layout — replace with your own content.</span>
+  </div>
+</footer>
+
+<noscript>
+  <style>
+    .loader{display:none!important}
+    body.loading{overflow:auto!important}
+    .hero-title .line>span{transform:none!important}
+    .hero .eyebrow,.hero-sub,.hero-actions,.hero-meta,.scroll-cue,.hero-side{opacity:1!important;transform:none!important}
+    .scroll-cue{transform:translate(-50%,0)!important}
+    .reveal,.reveal-scale{opacity:1!important;transform:none!important}
+    .cursor,.cursor-dot{display:none!important}
+    .menu-panel{display:grid!important}
+  </style>
+</noscript>
+
+<script>
+(function () {
+  'use strict';
+  var doc = document;
+  var body = doc.body;
+
+  /* ============ LOADER — guaranteed fallback ============ */
+  var loaderDone = false;
+  function finishLoad() {
+    if (loaderDone) return;
+    loaderDone = true;
+    var loader = doc.getElementById('loader');
+    if (loader) loader.classList.add('done');
+    body.classList.remove('loading');
+    body.classList.add('loaded');
+  }
+  window.addEventListener('load', function () { setTimeout(finishLoad, 700); });
+  doc.addEventListener('DOMContentLoaded', function () { setTimeout(finishLoad, 1500); });
+  setTimeout(finishLoad, 3500); /* absolute safety net */
+
+  /* ============ SCROLL PROGRESS ============ */
+  var progressBar = doc.getElementById('progressBar');
+  function updateProgress() {
+    if (!progressBar) return;
+    var h = doc.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.pageYOffset / h) * 100 : 0;
+    progressBar.style.width = p + '%';
+  }
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  updateProgress();
+
+  /* ============ CUSTOM CURSOR ============ */
+  var fine = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+  if (fine) {
+    var cur = doc.getElementById('cursor');
+    var dot = doc.getElementById('cursorDot');
+    var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+    var mx = cx, my = cy, dx = cx, dy = cy;
+
+    doc.addEventListener('mousemove', function (e) {
+      mx = e.clientX; my = e.clientY;
+    });
+
+    (function loop() {
+      cx += (mx - cx) * 0.16;
+      cy += (my - cy) * 0.16;
+      dx += (mx - dx) * 0.5;
+      dy += (my - dy) * 0.5;
+      if (cur) cur.style.transform = 'translate(' + (cx - 18) + 'px,' + (cy - 18) + 'px)';
+      if (dot) dot.style.transform = 'translate(' + (dx - 2) + 'px,' + (dy - 2) + 'px)';
+      requestAnimationFrame(loop);
+    })();
+
+    var growSel = 'a, button, .dish, .g-item, .sig, .tab, input, select, textarea';
+    doc.addEventListener('mouseover', function (e) {
+      if (cur && e.target.closest && e.target.closest(growSel)) cur.classList.add('grow');
+    });
+    doc.addEventListener('mouseout', function (e) {
+      if (cur && e.target.closest && e.target.closest(growSel)) cur.classList.remove('grow');
+    });
+  }
+
+  /* ============ NAV — scrolled + hide on scroll down ============ */
+  var nav = doc.getElementById('nav');
+  var lastY = window.pageYOffset;
+  window.addEventListener('scroll', function () {
+    var y = window.pageYOffset;
+    if (nav) {
+      nav.classList.toggle('scrolled', y > 40);
+      if (y > 470 && y > lastY) nav.classList.add('hide');
+      else nav.classList.remove('hide');
+    }
+    lastY = y;
+  }, { passive: true });
+
+  /* ============ MOBILE MENU ============ */
+  var burger = doc.getElementById('burger');
+  var navLinks = doc.getElementById('navLinks');
+  function setMenu(open) {
+    if (!burger || !navLinks) return;
+    burger.classList.toggle('active', open);
+    navLinks.classList.toggle('open', open);
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    body.classList.toggle('menu-open', open);
+  }
+  if (burger) {
+    burger.addEventListener('click', function () {
+      setMenu(!navLinks.classList.contains('open'));
+    });
+  }
+  if (navLinks) {
+    Array.prototype.forEach.call(navLinks.querySelectorAll('a'), function (a) {
+      a.addEventListener('click', function () { setMenu(false); });
+    });
+  }
+  doc.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') setMenu(false);
+  });
+
+  /* ============ SCROLL REVEALS ============ */
+  var revealEls = doc.querySelectorAll('.reveal, .reveal-scale');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    Array.prototype.forEach.call(revealEls, function (el) { io.observe(el); });
+  } else {
+    Array.prototype.forEach.call(revealEls, function (el) { el.classList.add('in'); });
+  }
+
+  /* ============ MENU TABS ============ */
+  var tabs = doc.querySelectorAll('.tab');
+  var panels = doc.querySelectorAll('.menu-panel');
+  Array.prototype.forEach.call(tabs, function (tab) {
+    tab.addEventListener('click', function () {
+      Array.prototype.forEach.call(tabs, function (t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      Array.prototype.forEach.call(panels, function (p) {
+        p.classList.remove('active');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      var panel = doc.querySelector('[data-panel="' + tab.dataset.tab + '"]');
+      if (panel) panel.classList.add('active');
+    });
+  });
+
+  /* ============ STAT COUNTERS ============ */
+  function runCounter(el) {
+    var target = parseFloat(el.getAttribute('data-count')) || 0;
+    var dec = parseInt(el.getAttribute('data-decimals') || '0', 10);
+    var suffix = el.getAttribute('data-suffix') || '';
+    var start = null, dur = 1900;
+    function step(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      var val = target * eased;
+      el.textContent = (dec ? val.toFixed(dec) : Math.round(val)) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var counters = doc.querySelectorAll('[data-count]');
+  if ('IntersectionObserver' in window) {
+    var cio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          runCounter(en.target);
+          cio.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    Array.prototype.forEach.call(counters, function (c) { cio.observe(c); });
+  } else {
+    Array.prototype.forEach.call(counters, runCounter);
+  }
+
+  /* ============ QUOTE ROTATION ============ */
+  var quotes = [
+    { t: '\u201CWe came for an anniversary and have been back eleven times since. The room feels like it has always been there.\u201D', a: '\u2014 Guest, since 2017' },
+    { t: '\u201CThe pasta is made in front of you and tastes like it. I have stopped ordering it anywhere else.\u201D', a: '\u2014 Guest, since 2019' },
+    { t: '\u201CThey remembered our table, our wine and my wife\u2019s allergy from a visit two years earlier.\u201D', a: '\u2014 Guest, since 2014' }
+  ];
+  var qText = doc.getElementById('quoteText');
+  var qAuthor = doc.getElementById('quoteAuthor');
+  if (qText && qAuthor) {
+    var qi = 0;
+    setInterval(function () {
+      qText.style.opacity = '0';
+      qAuthor.style.opacity = '0';
+      setTimeout(function () {
+        qi = (qi + 1) % quotes.length;
+        qText.textContent = quotes[qi].t;
+        qAuthor.textContent = quotes[qi].a;
+        qText.style.opacity = '1';
+        qAuthor.style.opacity = '1';
+      }, 650);
+    }, 7000);
+  }
+
+  /* ============ HERO + ABOUT PARALLAX ============ */
+  var heroBg = doc.getElementById('heroBg');
+  var aboutSmall = doc.getElementById('aboutSmall');
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduceMotion) {
+    window.addEventListener('scroll', function () {
+      var y = window.pageYOffset;
+      if (heroBg && y < window.innerHeight * 1.2) {
+        heroBg.style.transform = 'translateY(' + (y * 0.18) + 'px)';
+      }
+      if (aboutSmall) {
+        var rect = aboutSmall.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          var offset = (rect.top - window.innerHeight / 2) * 0.06;
+          aboutSmall.style.transform = 'translateY(' + offset + 'px)';
+        }
+      }
+    }, { passive: true });
+  }
+
+  /* ============ RESERVATION FORM ============ */
+  var form = doc.getElementById('bookForm');
+  var ok = doc.getElementById('formOk');
+  if (form && ok) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      var name = doc.getElementById('fName');
+      var phone = doc.getElementById('fPhone');
+      var date = doc.getElementById('fDate');
+      var guests = doc.getElementById('fGuests');
+      var service = doc.getElementById('fService');
+      var time = doc.getElementById('fTime');
+      var valid = true;
+
+      [name, phone, date].forEach(function (f) {
+        if (!f) return;
+        if (!f.value.trim()) {
+          f.style.borderBottomColor = '#c96b5c';
+          valid = false;
+        } else {
+          f.style.borderBottomColor = '';
+        }
+      });
+
+      if (!valid) {
+        ok.textContent = 'Please fill in your name, phone number and preferred date.';
+        ok.classList.add('show');
+        return;
+      }
+
+      ok.textContent = 'Thank you, ' + name.value.trim() + '. Your request for ' +
+        (guests ? guests.value : 'a table') + ' on ' + date.value +
+        ' at ' + (time ? time.value : '') + ' for ' +
+        (service ? service.value.toLowerCase() : 'dinner') +
+        ' has been noted. We will confirm by phone shortly. (Demo only \u2014 connect this form to your booking system.)';
+      ok.classList.add('show');
+      ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      form.reset();
+    });
+  }
+})();
+</script>
+</body>
+</html>

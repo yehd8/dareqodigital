@@ -15,6 +15,7 @@ try{
   for(const path of pages){
    const page=await context.newPage();const errors=[];const failed=[];
    page.on('pageerror',error=>errors.push(error.message));
+   page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});
    page.on('requestfailed',r=>failed.push({url:r.url(),reason:r.failure()?.errorText}));
    const response=await page.goto(base+path,{waitUntil:'networkidle'});
    // Load lazy gallery images with actual scrolling.
@@ -25,6 +26,15 @@ try{
    if(response.status()!==200||dom.scrollWidth>width||dom.h1!==1||!dom.description||dom.brokenImages.length||errors.length)report.failures.push(row);
    if(path==='/'){
     await page.screenshot({path:`${output}/home-${width}.png`,fullPage:true});
+    if (await page.locator('[data-filter]').count()) {
+     await page.locator('[data-filter="system"]').click();
+     assert.equal(await page.locator('[data-category]:visible').count(),1);
+     await page.locator('[data-filter="website"]').click();
+     assert.equal(await page.locator('[data-category]:visible').count(),6);
+     await page.locator('[data-filter="all"]').click();
+     assert.equal(await page.locator('[data-category]:visible').count(),7);
+     report.workflows.push({width,filters:'all, websites and systems passed'});
+    }
     if(width<=820){
      const toggle=page.getByRole('button',{name:'Open navigation menu'});await toggle.click();
      await page.locator('#mobileMenu .mobileMenuLinks a').last().focus();await page.keyboard.press('Tab');

@@ -1,7 +1,7 @@
 name: Website QA
 on:
   push:
-    branches: [improve/website-quality]
+    branches: [improve/website-quality, design/motionsites-dareqo]
   pull_request:
     branches: [main]
 permissions:

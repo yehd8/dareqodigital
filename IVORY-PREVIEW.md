@@ -1,4 +1,4 @@
-# Ivory and champagne color preview
+# Ivory and champagne release
 
 19 November 2026 — Beirut time.
 
@@ -10,6 +10,7 @@ A brighter proposed palette for Dareqo Digital: warm ivory #F7F3EB, champagne #E
 - index.html: browser theme-color metadata.
 - DESIGN.md: updated design tokens and focus guidance.
 - docs/dareqo-ivory-preview.jpg: screenshot of the local built preview.
+- docs/dareqo-ivory-live.jpg: screenshot of the verified production release.
 - IVORY-PREVIEW.md: this review and release record.
 
 ## Testing performed
@@ -36,20 +37,19 @@ Deployment: dpl_9KTdmFTBh5Sk4NuhCRmxgZzqLLi6 — READY.
 Tested application source: 9eb6a88c6b1c0bab22be122a6b2b9462a6b4574f.
 The preview retains normal Vercel access protection and may require the owner's sign-in. No public bearer link was created.
 Current production: https://dareqo-digital.vercel.app/
-Production retains the previous navy palette at dpl_8FoTk8BbqyiTDLpfATd5HyPdSstw while this trial is reviewed.
+Production now serves the approved ivory palette at dpl_7cNs9S7dfwkCe5iw8ebJzJA7svbP — READY. Live browser verification confirmed ivory rgb(247,243,235), charcoal rgb(36,35,32), seven demo links and no desktop horizontal overflow. The production build reran lint, type checking, unit tests and build using the same tested source. The previous navy deployment dpl_8FoTk8BbqyiTDLpfATd5HyPdSstw is the rollback anchor.
 
 ## Remaining risks
 Automated accessibility results do not establish full WCAG compliance. Image-backed contrast, screen-reader review and real-device checks remain manual follow-ups. The original sector demos were not recolored or fully audited. No real form submission, customer data, production credentials, field-performance measurement or load test was used. Existing backend/privacy/SEO review limits remain as recorded in REDESIGN-RELEASE.md.
 
 ## Deployment instructions and rollback
-After the color direction is accepted, deploy the exact tested source to production through the existing Vercel project. If using the official CLI, run from that checkout:
+The user approved the color direction and requested publication. The exact tested source was deployed through the existing Vercel project. For future releases using the official CLI, run from the reviewed checkout:
 ```sh
 vercel link --project dareqo-digital --scope dareqo-digital
 vercel deploy --prod --scope dareqo-digital
 ```
-These production commands have not been executed for this trial.
-To discard this trial, keep using the existing production alias; no production rollback is necessary.
-If the palette is later released and must be reverted:
+This release used Vercel's authenticated deployment API; the CLI commands above are an alternative for future releases.
+If the approved palette must be reverted:
 ```sh
 vercel rollback dpl_8FoTk8BbqyiTDLpfATd5HyPdSstw --scope dareqo-digital
 ```

@@ -3,3 +3,5 @@ dist/
 .openai/
 .env*
 !.env.example
+
+qa-results/

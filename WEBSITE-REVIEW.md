@@ -1,6 +1,6 @@
 # Dareqo Digital website review — 18 November 2026
 
-Status: focused improvements prepared on `improve/website-quality`. Not deployed. This is a bounded review, not a certification of security or WCAG compliance.
+Historical pre-deployment review. See LAUNCH-RESULT.md for the current Vercel deployment record, successful six-width Playwright results and updated live-policy observations. This is a bounded review, not a certification of security or WCAG compliance.
 
 ## Audience, goals and direction
 

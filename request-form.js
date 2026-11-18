@@ -17,6 +17,7 @@
   };
   const endpoint = 'https://fbgphoixzpykcpdbfbhd.supabase.co/rest/v1/rpc/submit_public_request';
   const publicKey = 'sb_publishable_U9E9amYU8RvRz4J1etv7Sw_svCjP-U-';
+  submit.disabled = false;
   form.addEventListener('submit', async event => {
     event.preventDefault();
     if (submit.disabled || !form.reportValidity()) return;

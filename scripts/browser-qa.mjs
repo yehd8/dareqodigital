@@ -59,6 +59,14 @@ try{
  const context=await browser.newContext({viewport:{width:375,height:900}});let rpcCount=0;
  await context.route('**/*.supabase.co/**',route=>{rpcCount++;return route.fulfill({status:503,contentType:'application/json',body:'{"message":"Synthetic QA failure"}'})});
  const page=await context.newPage();await page.goto(base);
+ if (await page.locator('#motionToggle').count()) {
+  await page.locator('#motionToggle').click();
+  assert.equal(await page.locator('#motionToggle').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('body').evaluate(el=>el.classList.contains('motion-paused')),true);
+  await page.locator('#motionToggle').click();
+  assert.equal(await page.locator('#motionToggle').getAttribute('aria-pressed'),'false');
+  report.workflows.push({motion:'pause and resume passed'});
+ }
  await page.locator('[name="customer_name"]').fill('QA Example');await page.locator('[name="phone"]').fill('+96100000000');await page.locator('[name="service"]').fill('QA website');
  await page.locator('#requestSubmit').click();await page.getByText('We could not confirm delivery.',{exact:false}).waitFor();assert.equal(await page.locator('#requestSubmit').isEnabled(),true);assert.equal(await page.locator('[name="customer_name"]').inputValue(),'QA Example');assert.equal(rpcCount,1);
  await context.unroute('**/*.supabase.co/**');await context.route('**/*.supabase.co/**',route=>route.fulfill({status:204,body:''}));

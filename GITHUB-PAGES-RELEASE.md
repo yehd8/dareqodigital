@@ -24,3 +24,22 @@ Vercel remains a separate deployment; future releases need to update the intende
 ## Deployment and recovery
 The publication commit is merged to main with the previous main as its first parent, preserving history. The existing Pages push workflow publishes the static artifact.
 Final workflow, live verification and exact rollback command are recorded below after completion.
+
+## Verified publication result
+GitHub Pages deployment succeeded: https://github.com/yehd8/dareqodigital/actions/runs/44410517075 .
+Publication merge commit: fb728fc960e5049a171c6aac56951b13ecb1ec96.
+Live production URL: https://yehd8.github.io/dareqodigital/ .
+The live browser loaded the new layout directly at that address, with ivory background rgb(247,243,235), charcoal text rgb(36,35,32), both local stylesheets under /dareqodigital/, seven demo destinations resolving under that project prefix, and no desktop horizontal overflow.
+Evidence: docs/dareqo-original-url-live.jpg. No further runtime files changed after the successful build.
+Vercel preview remains available at https://dareqo-digital-93yjkeyhw-dareqo-digital.vercel.app (normal Vercel protection may require sign-in).
+
+For future publication, push the reviewed source to main; the existing pages.yml workflow runs its build checks and deploys dist/. No environment secrets were added or changed.
+
+Exact rollback from a clean, up-to-date main checkout:
+```sh
+git switch main
+git pull --ff-only origin main
+git revert -m 1 fb728fc960e5049a171c6aac56951b13ecb1ec96
+git push origin main
+```
+This creates a normal history-preserving revert of the publication merge and triggers the Pages workflow. The rollback commands have not been executed. Verify the old URL after recovery. This rollback affects GitHub Pages; Vercel remains independently deployed.

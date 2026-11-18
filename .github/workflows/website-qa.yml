@@ -1,0 +1,34 @@
+name: Website QA
+on:
+  push:
+    branches: [improve/website-quality, design/motionsites-dareqo]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  browser-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run lint && npm run typecheck && npm test && npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Test all requested viewport widths
+        run: |
+          python3 -m http.server 4173 --directory dist >/tmp/website-qa-server.log 2>&1 &
+          node scripts/browser-qa.mjs
+          node scripts/accessibility-qa.mjs
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: dareqo-browser-qa
+          path: qa-results/
+          retention-days: 7

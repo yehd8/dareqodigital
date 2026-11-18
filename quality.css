@@ -1,0 +1,23 @@
+/* Shared foundations; retain the existing navy, blue and cyan identity. */
+:root{--blue:#405bdb;--muted:#526177;--focus:#008394;--space-unit:.25rem;--radius:1rem}
+:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
+.nav :focus-visible,.mobileMenu :focus-visible,.hero :focus-visible,.cta :focus-visible{outline-color:#7ee5ef}
+.skip-link{position:fixed;top:8px;left:8px;z-index:100;padding:12px 18px;background:#fff;color:#12213a;transform:translateY(-150%)}
+.skip-link:focus{transform:none}
+main:focus{outline:none}
+button,input,select,textarea{font:inherit}
+input,select,button,.btn{min-height:44px}
+input,select,textarea{min-width:0;max-width:100%}
+.primary,.btn{background-color:var(--blue)}
+.heroIn>*{min-width:0}
+h1,h2,h3,p,a{overflow-wrap:break-word}
+.box p,.demoCardBody p,.muted{color:#526177}
+.form-help{font-size:.875rem;line-height:1.6;color:#526177;margin:16px 0 0}
+.form-help a{text-decoration:underline}
+.form-msg{overflow-wrap:anywhere}
+button:disabled{opacity:.65;cursor:wait}
+.demoCard img{aspect-ratio:850/560}
+.heroLogoKicker{color:#435b71}
+.heroLogoKicker span:last-child{color:#176c63}
+@media(max-width:480px){.navin{padding-inline:12px;gap:8px}.brand img{width:128px}.navin .lang{max-width:94px}.hero h1{font-size:clamp(2rem,10vw,2.8rem)}.section h2{font-size:1.8rem}.socialFloat{right:10px;bottom:10px}.socialFloat a{width:44px;height:44px}.request-wrap{padding:18px}.request-actions{padding-right:34px}.footer{padding-bottom:130px}.codePanel{white-space:normal}.wrap{padding:20px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none}}

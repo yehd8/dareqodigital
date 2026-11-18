@@ -15,6 +15,7 @@ try{
   for(const path of pages){
    const page=await context.newPage();const errors=[];const failed=[];
    page.on('pageerror',error=>errors.push(error.message));
+   page.on('console',message=>{if(message.type()==='error')errors.push(message.text())});
    page.on('requestfailed',r=>failed.push({url:r.url(),reason:r.failure()?.errorText}));
    const response=await page.goto(base+path,{waitUntil:'networkidle'});
    // Load lazy gallery images with actual scrolling.
@@ -25,6 +26,28 @@ try{
    if(response.status()!==200||dom.scrollWidth>width||dom.h1!==1||!dom.description||dom.brokenImages.length||errors.length)report.failures.push(row);
    if(path==='/'){
     await page.screenshot({path:`${output}/home-${width}.png`,fullPage:true});
+    if (await page.locator('[data-filter]').count()) {
+     await page.locator('[data-filter="system"]').click();
+     assert.equal(await page.locator('[data-category]:visible').count(),1);
+     await page.locator('[data-filter="website"]').click();
+     assert.equal(await page.locator('[data-category]:visible').count(),6);
+     await page.locator('[data-filter="all"]').click();
+     assert.equal(await page.locator('[data-category]:visible').count(),7);
+     report.workflows.push({width,filters:'all, websites and systems passed'});
+    }
+    if(width===375 && await page.locator('.work-caption .text-link').count()) {
+     const links=await page.locator('.work-caption .text-link').all();
+     for(const link of links){
+      const href=await link.getAttribute('href');
+      const popupEvent=page.waitForEvent('popup');
+      await link.click();
+      const popup=await popupEvent;
+      await popup.waitForURL(new URL(href,base).href);
+      assert.equal(new URL(popup.url()).pathname,new URL(href,base).pathname);
+      await popup.close();
+     }
+     report.workflows.push({width,demoLinks:'all seven visible demo buttons opened the correct destination'});
+    }
     if(width<=820){
      const toggle=page.getByRole('button',{name:'Open navigation menu'});await toggle.click();
      await page.locator('#mobileMenu .mobileMenuLinks a').last().focus();await page.keyboard.press('Tab');
@@ -49,6 +72,14 @@ try{
  const context=await browser.newContext({viewport:{width:375,height:900}});let rpcCount=0;
  await context.route('**/*.supabase.co/**',route=>{rpcCount++;return route.fulfill({status:503,contentType:'application/json',body:'{"message":"Synthetic QA failure"}'})});
  const page=await context.newPage();await page.goto(base);
+ if (await page.locator('#motionToggle').count()) {
+  await page.locator('#motionToggle').click();
+  assert.equal(await page.locator('#motionToggle').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('body').evaluate(el=>el.classList.contains('motion-paused')),true);
+  await page.locator('#motionToggle').click();
+  assert.equal(await page.locator('#motionToggle').getAttribute('aria-pressed'),'false');
+  report.workflows.push({motion:'pause and resume passed'});
+ }
  await page.locator('[name="customer_name"]').fill('QA Example');await page.locator('[name="phone"]').fill('+96100000000');await page.locator('[name="service"]').fill('QA website');
  await page.locator('#requestSubmit').click();await page.getByText('We could not confirm delivery.',{exact:false}).waitFor();assert.equal(await page.locator('#requestSubmit').isEnabled(),true);assert.equal(await page.locator('[name="customer_name"]').inputValue(),'QA Example');assert.equal(rpcCount,1);
  await context.unroute('**/*.supabase.co/**');await context.route('**/*.supabase.co/**',route=>route.fulfill({status:204,body:''}));

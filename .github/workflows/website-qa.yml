@@ -1,7 +1,7 @@
 name: Website QA
 on:
   push:
-    branches: [improve/website-quality]
+    branches: [improve/website-quality, design/motionsites-dareqo]
   pull_request:
     branches: [main]
 permissions:
@@ -25,6 +25,7 @@ jobs:
         run: |
           python3 -m http.server 4173 --directory dist >/tmp/website-qa-server.log 2>&1 &
           node scripts/browser-qa.mjs
+          node scripts/accessibility-qa.mjs
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:

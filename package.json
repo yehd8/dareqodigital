@@ -1,0 +1,10 @@
+{
+  "name": "dareqo-digital", "private": true, "type": "module",
+  "scripts": {
+    "lint": "node scripts/check.mjs",
+    "typecheck": "tsc --allowJs --checkJs --noEmit --lib ES2022,DOM request-form.js",
+    "test": "node --test tests/*.test.mjs",
+    "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {"typescript": "5.9.3"}
+}

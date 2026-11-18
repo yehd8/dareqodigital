@@ -17,8 +17,8 @@ https://yehd8.github.io/dareqodigital/manager.html
 - Custom Business System — custom quote
 
 ## Contact
-WhatsApp: +961 78 755 934
-Email: kelvocommerce@gmail.com
+WhatsApp: +961 81 750 641
+Email: dareqodigital@gmail.com
 
 ## Notes
 The manager is an evolving custom business system backed by Supabase. Production hardening, access-control review, testing and operational monitoring should continue before treating it as a general-purpose SaaS product.

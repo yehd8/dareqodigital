@@ -35,6 +35,19 @@ try{
      assert.equal(await page.locator('[data-category]:visible').count(),7);
      report.workflows.push({width,filters:'all, websites and systems passed'});
     }
+    if(width===375 && await page.locator('.work-caption .text-link').count()) {
+     const links=await page.locator('.work-caption .text-link').all();
+     for(const link of links){
+      const href=await link.getAttribute('href');
+      const popupEvent=page.waitForEvent('popup');
+      await link.click();
+      const popup=await popupEvent;
+      await popup.waitForURL(new URL(href,base).href);
+      assert.equal(new URL(popup.url()).pathname,new URL(href,base).pathname);
+      await popup.close();
+     }
+     report.workflows.push({width,demoLinks:'all seven visible demo buttons opened the correct destination'});
+    }
     if(width<=820){
      const toggle=page.getByRole('button',{name:'Open navigation menu'});await toggle.click();
      await page.locator('#mobileMenu .mobileMenuLinks a').last().focus();await page.keyboard.press('Tab');

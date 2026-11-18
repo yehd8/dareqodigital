@@ -10,11 +10,12 @@ Page order: hero → filterable demos → services → Business Manager workflow
 
 ## Tokens
 
-- Navy canvas #080f1e; panel #111c30; paper #f5f6f8.
-- Primary cobalt #3e5cff; cyan #85e1f5; primary ink #f4f6ff; secondary #a5b3cb.
+- Proposed light palette: ivory canvas #f7f3eb; champagne panels #e8dcc8; secondary paper #efe8dc.
+- Primary cobalt #3e5cff; primary charcoal ink #242320; secondary warm gray #625d54; editorial accent #3649a8.
 - System sans serif for interface and headings; Georgia italic for editorial emphasis; system monospace for secondary labels/code. No downloaded fonts or font-CDN request.
 - Headings use responsive clamp sizing; body defaults to 16px. Form labels are 14px, form inputs 16px on mobile, supporting metadata 12px where practical. Hero illustration miniature content is decorative and hidden from assistive technology.
 - 1280px maximum content width. Page gutters 48px desktop, 32px tablet, 20px mobile. Major section spacing 104/80/60px; local gaps 12/18/24/32px.
+- Focus: cobalt #304bea on light surfaces; photographic demos retain their dark overlays and white copy.
 - Borders: restrained 1px rules; panels 7–12px radii. Shadows reserved for stacked hero visuals, quote panel and interface depth.
 - Breakpoints 540, 820, 1100, 1600px. At 820px and below, native button opens the modal navigation. Mobile work cards and quote inputs use one column.
 
